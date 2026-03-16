@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vixera</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+<style>
+  
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Montserrat',sans-serif}
+body{
+background:#000;
+color:#fff;
+
+/* BACKGROUND IMAGE AREA (optional) */
+background-image: url("image/background-01-01.png");
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
+
+}
+
+.logo-container {
+  display: flex;
+  align-items: center; /* vertically aligns logo with text */
+  gap: 8px; /* space between logo and text */
+}
+
+.logo-img {
+  width: 40px;   /* smaller size */
+  height: 40px;  /* smaller size */
+  object-fit: contain;
+}
+
+.logo-text {    
+  display: flex;
+  flex-direction: column;
+}
+
+body::before, body::after{
+content:"";
+position:fixed;
+top:0;
+width:6px;
+height:100%;
+background:#E91841;
+z-index:0
+}
+body::before{left:0}
+body::after{right:0}
+
+header{
+position:sticky;
+top:0;
+background:#000;
+padding:20px 40px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+border-bottom:1px solid #222;
+z-index:1000
+}
+
+.logo{font-size:26px;font-weight:600;color:#E91841}
+.slogan{font-size:12px;color:#aaa}
+
+nav ul{display:flex;list-style:none;gap:25px}
+nav li{cursor:pointer;transition:0.2s}
+nav li:hover{color:#E91841}
+
+.cart-btn{
+cursor:pointer;
+border:1px solid #E91841;
+padding:6px 14px;
+border-radius:20px;
+transition:0.2s
+}
+.cart-btn:hover{background:#E91841}
+
+.container{padding:40px;max-width:1300px;margin:auto}
+
+.hero{
+margin-bottom:60px;
+position:relative;
+transition:0.45s ease;
+}
+
+.hero-image{
+position:absolute;
+right:0;
+top:0;
+width:600px;
+height:300px;
+opacity:0.35;
+background-size:contain;
+background-repeat:no-repeat;
+background-position:center;
+transition:transform 0.2s;
+}
+
+.hero.hidden{
+margin-bottom:0;
+height:0;
+overflow:hidden;
+}
+
+
+.hero-text{
+max-width:600px;
+transition:0.45s ease;
+}
+
+.hero-text h1{
+font-size:46px;
+margin-bottom:15px;
+}
+
+.hero-text p{
+color:#bbb;
+line-height:1.6;
+}
+
+/* hidden state when switching category */
+.hero-text.hidden{
+opacity:0;
+transform:translateY(-120px);
+pointer-events:none;
+}
+
+
+.section-title{font-size:30px;margin-bottom:30px}
+
+.category-title{
+font-size:30px;
+margin-bottom:30px;
+color:#E91841;
+opacity:0;
+transform:translateX(0);
+transition:0.35s ease;
+position:relative;
+}
+
+.category-title.show{
+opacity:1;
+transform:translateX(0);
+}
+
+.category-title.slide-left{
+opacity:0;
+transform:translateX(-60px);
+}
+
+.category-title.slide-right{
+opacity:0;
+transform:translateX(60px);
+}
+
+.bestsellers{
+display:grid;
+grid-template-columns:repeat(2,1fr);
+gap:30px;
+margin-bottom:80px;
+transition:0.4s
+}
+
+.best-item{
+background:#0a0a0a;
+border:1px solid #222;
+padding:30px;
+border-radius:12px;
+transition:0.3s;
+cursor:pointer
+}
+
+
+.best-item:hover{
+border-color:#E91841;
+transform:translateY(-5px)
+}
+
+.best-image{
+height:220px;
+background:#111;
+border-radius:8px;
+margin-bottom:20px;
+
+background-size:contain;
+background-position:center;
+background-repeat:no-repeat;
+}
+
+.best-item img{
+width:100%;
+height:220px;
+object-fit:contain;
+border-radius:8px;
+margin-bottom:20px;
+}
+
+
+.best-name{font-size:20px;font-weight:600}
+.price{color:#E91841}
+
+.products{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px
+}
+
+.product{
+background:#0a0a0a;
+border:1px solid #1a1a1a;
+border-radius:10px;
+padding:20px;
+transition:0.25s;
+cursor:pointer
+}
+
+.product{
+position:relative;
+overflow:hidden;
+}
+
+.product::before{
+content:"";
+position:absolute;
+inset:0;
+background:radial-gradient(circle at var(--x) var(--y),
+rgba(233,24,65,0.35),
+transparent 10%);
+opacity:0;
+transition:opacity 0.25s;
+pointer-events:none;
+}
+
+.product:hover::before{
+opacity:1;
+}
+
+.product{
+opacity:1;
+transform:scale(1);
+transition:0.25s opacity, 0.25s transform;
+}
+
+.product.hide{
+opacity:0;
+transform:scale(0.95);
+pointer-events:none;
+}
+
+.product.show{
+opacity:1;
+transform:scale(1);
+}
+
+
+.product:hover{border-color:#E91841;transform:translateY(-4px)}
+
+.image{
+height:140px;
+background:#111;
+border-radius:6px;
+margin-bottom:15px;
+
+background-size:contain;
+background-position:center;
+background-repeat:no-repeat;
+}
+
+.product img{
+width:100%;
+height:140px;
+object-fit:contain;
+border-radius:6px;
+margin-bottom:15px;
+}
+
+
+.name{font-weight:600;margin-bottom:6px}
+.category{font-size:13px;color:#888;margin-bottom:6px}
+
+.add-cart{
+  margin-top:10px;
+  background:#E91841;
+  border:none;
+  color:#fff;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  transition: 0.1s transform, 0.1s box-shadow;
+}
+
+.add-cart:active {
+  transform: scale(0.95); /* button shrinks slightly */
+  box-shadow: 0 0 8px rgba(233, 24, 65, 0.5); /* subtle glow effect on click */
+}
+
+.cart{
+position:fixed;
+right:-380px;
+top:0;
+width:320px;
+height:100%;
+background:#0a0a0a;
+border-left:2px solid #E91841;
+padding:25px;
+transition:0.35s;
+z-index:3000
+}
+
+.cart.active{right:0}
+
+.cart-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px
+}
+
+.close-cart{
+cursor:pointer;
+font-size:22px
+}
+
+.cart-items{font-size:14px;color:#ccc;line-height:1.6}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:10px
+}
+
+.remove{
+cursor:pointer;
+color:#E91841;
+margin-left:10px
+}
+
+.checkout{
+margin-top:20px;
+background:#E91841;
+border:none;
+padding:10px;
+width:100%;
+color:#fff;
+cursor:pointer
+}
+
+.product-view{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:flex;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,0.6);
+z-index:2000;
+opacity:0;
+pointer-events:none;
+transition:0.35s;
+}
+
+.product-view.active{
+opacity:1;
+pointer-events:auto;
+}
+
+.product-layout{
+background:#0a0a0a;
+border:1px solid #222;
+border-radius:12px;
+padding:40px;
+max-width:1100px;
+width:90%;
+transform:scale(0.85);
+transition:0.35s;
+}
+
+.product-view.active .product-layout{
+transform:scale(1);
+}
+
+
+.product-layout{display:grid;grid-template-columns:1fr 1fr;gap:60px;max-width:1200px;margin:auto}
+.product-image-large{
+height:400px;
+background:#111;
+border-radius:10px;
+
+background-size:contain;
+background-position:center;
+background-repeat:no-repeat;
+}
+
+
+.product-info h1{font-size:36px;margin-bottom:10px}
+.product-info .price{font-size:22px;margin-bottom:20px}
+
+.specs{margin-top:20px;line-height:1.8;color:#ccc}
+
+.close-btn{
+position:absolute;
+top:20px;
+right:25px;
+font-size:26px;
+cursor:pointer;
+color:#aaa;
+}
+
+.about{
+  margin-top:120px;
+  opacity:0;
+  transform:translateY(40px);
+  transition:1s;
+
+  /* Glass-style background */
+  background: rgba(255, 255, 255, 0.05); /* slight transparency */
+  backdrop-filter: blur(8px); /* blur effect behind the glass */
+  padding: 30px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+
+.about p{
+  max-width:700px;
+  line-height:1.6;
+  color:#bbb;
+}
+
+.footer-divider{
+margin-top:80px;
+height:1px;
+background:#fff;
+opacity:0.2;
+}
+
+.footer-links{
+display:flex;
+justify-content:center;
+gap:80px;
+margin-top:25px;
+font-size:13px;
+color:#888;
+}
+
+.footer-links div{
+cursor:pointer;
+transition:0.2s;
+}
+
+.footer-links div:hover{
+color:#fff;
+}
+
+footer{
+margin-top:60px;
+padding:40px;
+border-top:1px solid #222;
+text-align:center;
+color:#666
+
+}
+
+</style>
+
+
+</head>
+
+<body>
+
+<header>
+<div class="logo-container">
+  <img src="image/logo.png" alt="Vixera Logo" class="logo-img">
+  <div class="logo-text">
+    <div class="logo">Vixera</div>
+    <div class="slogan">"Feel Every Move"</div>
+  </div>
+</div>
+
+
+<nav>
+<ul>
+<li onclick="showMain()">Main</li>
+<li onclick="openCategory('Headphones')">Headphones</li>
+<li onclick="openCategory('Mice')">Mice</li>
+<li onclick="openCategory('Keyboards')">Keyboards</li>
+<li onclick="openCategory('Laptops')">Laptops</li>
+<li onclick="openCategory('Chairs')">Chairs</li>
+<li onclick="openCategory('Accessories')">Accessories</li>
+</ul>
+</nav>
+
+<div class="cart-btn" onclick="toggleCart()">Cart</div>
+</header>
+
+<div class="container">
+
+  <div class="hero">
+
+<div class="hero-text" id="heroText">
+
+<h1>Build Your Ultimate Setup</h1>
+<p>
+Precision gaming gear engineered for performance, speed, and immersion.
+Discover the Vixera ecosystem designed to elevate every move.
+</p>
+
+</div>
+
+<div class="hero-image"></div>
+
+</div>
+
+
+<div id="categoryTitle" class="category-title"></div>
+
+<div class="bestsellers" id="bestsellerSection">
+
+<div class="best-item" onclick="openProduct('mouse')">
+<img src="image/mouse.jpg">
+<div class="best-name">Vixera Pulse Mouse</div>
+<div class="price">$79</div>
+</div>
+
+<div class="best-item" onclick="openProduct('keyboard')">
+<img src="image/keyboard.jpg">
+<div class="best-name">Vixera Phantom Keyboard</div>
+<div class="price">$129</div>
+</div>
+
+<div class="best-item" onclick="openProduct('headset')">
+<img src="image/headphones.jpg">
+<div class="best-name">Vixera Nova Headset</div>
+<div class="price">$149</div>
+</div>
+
+<div class="best-item" onclick="openProduct('laptop')">
+<img src="image/laptop.jpg">
+<div class="best-name">Vixera Blade Laptop</div>
+<div class="price">$1399</div>
+</div>
+
+</div>
+
+<div class="section-title">Store</div>
+
+<div class="products" id="productGrid">
+
+<!-- NEW ITEMS -->
+
+<div class="product" data-category="Mice" onclick="openProduct('mouse2')">
+<img src="image/mouse2.jpg">
+<div class="name">Vixera Shadow Mouse</div>
+<div class="category">Mice</div>
+<div class="price">$89</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Shadow Mouse')">Add</button>
+</div>
+
+<div class="product" data-category="Keyboards" onclick="openProduct('keyboard2')">
+<img src="image/keyboard2.jpg">
+<div class="name">Vixera Titan Keyboard</div>
+<div class="category">Keyboards</div>
+<div class="price">$149</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Titan Keyboard')">Add</button>
+</div>
+
+<div class="product" data-category="Headphones" onclick="openProduct('headset2')">
+<img src="image/headphones2.jpg">
+<div class="name">Vixera Eclipse Headset</div>
+<div class="category">Headphones</div>
+<div class="price">$169</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Eclipse Headset')">Add</button>
+</div>
+
+<div class="product" data-category="Laptops" onclick="openProduct('laptop2')">
+<img src="image/laptop2.jpg">
+<div class="name">Vixera Storm Laptop</div>
+<div class="category">Laptops</div>
+<div class="price">$1499</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Storm Laptop')">Add</button>
+</div>
+
+<!-- EXISTING -->
+
+<div class="product" data-category="Mice" onclick="openProduct('mouse')">
+<img src="image/mouse.jpg">
+<div class="name">Vixera Pulse Mouse</div>
+<div class="category">Mice</div>
+<div class="price">$79</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Pulse Mouse')">Add</button>
+</div>
+
+<div class="product" data-category="Keyboards" onclick="openProduct('keyboard')">
+<img src="image/keyboard.jpg">
+<div class="name">Vixera Phantom Keyboard</div>
+<div class="category">Keyboards</div>
+<div class="price">$129</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Phantom Keyboard')">Add</button>
+</div>
+
+<div class="product" data-category="Headphones" onclick="openProduct('headset')">
+<img src="image/headphones.jpg">
+<div class="name">Vixera Nova Headset</div>
+<div class="category">Headphones</div>
+<div class="price">$149</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Nova Headset')">Add</button>
+</div>
+
+<div class="product" data-category="Laptops" onclick="openProduct('laptop')">
+<img src="image/laptop.jpg">
+<div class="name">Vixera Blade Laptop</div>
+<div class="category">Laptops</div>
+<div class="price">$1399</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Blade Laptop')">Add</button>
+</div>
+
+<!-- CHAIRS -->
+
+<div class="product" data-category="Chairs" onclick="openProduct('chair1')">
+<img src="image/chair.jpg">
+<div class="name">Vixera Apex Chair</div>
+<div class="category">Chairs</div>
+<div class="price">$399</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Apex Chair')">Add</button>
+</div>
+
+<div class="product" data-category="Chairs" onclick="openProduct('chair2')">
+<img src="image/chair2.jpg">
+<div class="name">Vixera Titan Pro Chair</div>
+<div class="category">Chairs</div>
+<div class="price">$449</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Titan Pro Chair')">Add</button>
+</div>
+
+<!-- ACCESSORIES -->
+
+<div class="product" data-category="Accessories" onclick="openProduct('mat')">
+<img src="image/mat.jpg">
+<div class="name">Vixera Glide Mouse Mat</div>
+<div class="category">Accessories</div>
+<div class="price">$39</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Glide Mouse Mat')">Add</button>
+</div>
+
+<div class="product" data-category="Accessories" onclick="openProduct('dock')">
+<img src="image/dock.jpg">
+<div class="name">Vixera Core Dock Station</div>
+<div class="category">Accessories</div>
+<div class="price">$89</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Core Dock Station')">Add</button>
+</div>
+
+<div class="product" data-category="Accessories" onclick="openProduct('bungee')">
+<img src="image/bungee.jpg">
+<div class="name">Vixera Pulse Mouse Bungee</div>
+<div class="category">Accessories</div>
+<div class="price">$29</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Pulse Mouse Bungee')">Add</button>
+</div>
+
+<div class="product" data-category="Accessories" onclick="openProduct('hub')">
+<img src="image/usb.jpg">
+<div class="name">Vixera Link USB Hub</div>
+<div class="category">Accessories</div>
+<div class="price">$49</div>
+<button class="add-cart" onclick="event.stopPropagation();addToCart('Vixera Link USB Hub')">Add</button>
+</div>
+
+</div>
+
+<div class="about" id="aboutSection">
+<div class="section-title">About</div>
+
+<p>
+Made by ERIK HOVHANNISYAN - Vixera is a modern technology marketplace focused on delivering premium PC accessories and gaming equipment. Our mission is to combine performance, design, and reliability into a seamless shopping experience for enthusiasts and professionals.
+</p>
+
+</div>
+
+<div class="footer-divider"></div>
+
+<div class="footer-links">
+<div>Support</div>
+<div>Contact Us</div>
+<div>Software</div>
+</div>
+
+</div>
+
+<footer>© 2026 Vixera. All rights reserved.</footer>
+
+<!-- CART -->
+<div class="cart" id="cart">
+
+<div class="cart-header">
+<h2>Your Cart</h2>
+<div class="close-cart" onclick="toggleCart()">✕</div>
+</div>
+
+<div class="cart-items" id="cartItems"></div>
+
+<button class="checkout" onclick="fakeCheckout()">Purchase</button>
+
+</div>
+
+<!-- PRODUCT VIEW -->
+ 
+<div class="product-view" id="productView">
+<div class="close-btn" onclick="closeProduct()">✕</div>
+<div class="product-layout">
+<div class="product-image-large"></div>
+<div class="product-info">
+<h1 id="productTitle"></h1>
+<div class="price" id="productPrice"></div>
+<p id="productDesc"></p>
+<div class="specs" id="productSpecs"></div>
+<button class="add-cart" onclick="addToCart(currentProduct)">Add To Cart</button>
+</div>
+</div>
+</div>
+
+
+
+<script>
+
+  document.querySelectorAll(".product").forEach(card=>{
+
+card.addEventListener("mousemove",e=>{
+
+const rect=card.getBoundingClientRect()
+
+const x=e.clientX-rect.left
+const y=e.clientY-rect.top
+
+card.style.setProperty("--x",x+"px")
+card.style.setProperty("--y",y+"px")
+
+})
+
+})
+
+const productView = document.getElementById("productView")
+const productLayout = document.querySelector(".product-layout")
+
+productView.addEventListener("click", function(e){
+
+if(!productLayout.contains(e.target)){
+productView.classList.remove("active")
+}
+
+})
+
+
+
+let currentProduct=""
+let cartList=[]
+let currentCategoryIndex = 0
+
+const categoryOrder = [
+"Headphones",
+"Mice",
+"Keyboards",
+"Laptops",
+"Chairs",
+"Accessories"
+]
+
+function openCategory(category){
+
+  
+document.querySelector(".hero").classList.add("hidden")
+document.getElementById("heroText").classList.add("hidden")
+
+
+document.getElementById("bestsellerSection").style.display="none"
+
+
+const title=document.getElementById("categoryTitle")
+title.innerText=category
+title.classList.add("show")
+
+const products=document.querySelectorAll(".product")
+
+products.forEach(p=>{
+if(p.dataset.category===category){
+p.style.display="block"
+}else{
+p.style.display="none"
+}
+})
+
+window.scrollTo({top:0,behavior:'smooth'})
+
+}
+
+
+function showMain(){
+
+document.querySelector(".hero").classList.remove("hidden")
+document.getElementById("heroText").classList.remove("hidden")
+
+
+document.getElementById("bestsellerSection").style.display="grid"
+
+document.getElementById("categoryTitle").classList.remove("show")
+
+const products=document.querySelectorAll(".product")
+
+products.forEach(p=>{
+p.style.display="block"
+})
+
+window.scrollTo({top:0,behavior:'smooth'})
+
+}
+
+
+
+function toggleCart(){
+document.getElementById('cart').classList.toggle('active')
+}
+
+function addToCart(item){
+cartList.push(item)
+updateCart()
+}
+
+function removeItem(index){
+cartList.splice(index,1)
+updateCart()
+}
+
+function updateCart(){
+
+let html=""
+
+cartList.forEach((item,index)=>{
+html+=`<div class="cart-item">${item} <span class="remove" onclick="removeItem(${index})">✕</span></div>`
+})
+
+cartItems.innerHTML=html
+
+}
+
+function fakeCheckout(){
+alert("Thank you for your purchase!")
+cartList=[]
+updateCart()
+}
+
+const products = {
+
+mouse:{title:'Vixera Pulse Mouse',price:'$79',desc:'Ultra-precise esports mouse.',specs:'• 26,000 DPI sensor • 58g weight • 8000Hz polling', image:'image/mouse.jpg'},
+
+mouse2:{title:'Vixera Shadow Mouse',price:'$89',desc:'Sleek and precise gaming mouse.',specs:'• 20,000 DPI sensor • 60g weight • RGB lighting', image:'image/mouse2.jpg'},
+
+keyboard:{title:'Vixera Phantom Keyboard',price:'$129',desc:'Premium mechanical keyboard.',specs:'• Linear switches • Aluminum frame • RGB lighting', image:'image/keyboard.jpg'},
+
+keyboard2:{title:'Vixera Titan Keyboard',price:'$149',desc:'Durable mechanical keyboard for gamers.',specs:'• Clicky switches • Aluminum frame • RGB lighting', image:'image/keyboard2.jpg'},
+
+headset:{title:'Vixera Nova Headset',price:'$149',desc:'Immersive gaming headset.',specs:'• 50mm drivers • 7.1 surround • Noise cancelling mic', image:'image/headphones.jpg'},
+
+headset2:{title:'Vixera Eclipse Headset',price:'$169',desc:'High-quality surround sound headset.',specs:'• 50mm drivers • 7.1 surround • Noise cancelling mic', image:'image/headphones2.jpg'},
+
+laptop:{title:'Vixera Blade Laptop',price:'$1399',desc:'High performance gaming laptop.',specs:'• i7-14700H • RTX 4070 • 32GB RAM • 240Hz display', image:'image/laptop.jpg'},
+
+laptop2:{title:'Vixera Storm Laptop',price:'$1499',desc:'Powerful gaming laptop with premium specs.',specs:'• i9-14900H • RTX 4080 • 32GB RAM • 360Hz display', image:'image/laptop2.jpg'},
+
+chair1:{title:'Vixera Apex Chair',price:'$399',desc:'Ergonomic gaming chair built for long competitive sessions.',specs:'• Memory foam cushions • 4D armrests • Steel frame • Lumbar support', image:'image/chair.jpg'},
+
+chair2:{title:'Vixera Titan Pro Chair',price:'$449',desc:'Premium gaming chair designed for maximum comfort.',specs:'• Magnetic headrest • Aluminum base • Premium leather • 165° recline', image:'image/chair2.jpg'},
+
+mat:{title:'Vixera Glide Mouse Mat',price:'$39',desc:'Ultra smooth extended gaming surface.',specs:'• Micro-weave cloth • Anti-slip base • Water resistant • XL size', image:'image/mat.jpg'},
+
+dock:{title:'Vixera Core Dock Station',price:'$89',desc:'Universal docking station for laptops.',specs:'• HDMI 4K • Ethernet • USB-C power delivery • 8 ports total', image:'image/dock.jpg'},
+
+bungee:{title:'Vixera Pulse Mouse Bungee',price:'$29',desc:'Cable management system for smooth mouse movement.',specs:'• Flexible arm • Weighted base • Anti-slip grip', image:'image/bungee.jpg'},
+
+hub:{title:'Vixera Link USB Hub',price:'$49',desc:'High-speed USB hub for expanding setups.',specs:'• 4 USB 3.2 ports • Aluminum build • Plug & play', image:'image/usb.jpg'}
+
+}
+
+function openProduct(id){
+  currentProduct = products[id].title;
+  
+  document.getElementById('productTitle').innerText = products[id].title;
+  document.getElementById('productPrice').innerText = products[id].price;
+  document.getElementById('productDesc').innerText = products[id].desc;
+  document.getElementById('productSpecs').innerText = products[id].specs;
+  
+  // Set the image in the large view
+  document.querySelector(".product-image-large").style.backgroundImage = `url('${products[id].image}')`;
+  
+  document.getElementById('productView').classList.add('active');
+}
+
+
+
+function closeProduct(){
+productView.classList.remove('active')
+
+
+}
+
+const observer=new IntersectionObserver(entries=>{
+entries.forEach(entry=>{
+if(entry.isIntersecting){entry.target.classList.add('visible')}
+})
+})
+
+observer.observe(document.getElementById('aboutSection'))
+
+</script>
+
+</body>
+</html>
