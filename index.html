@@ -71,6 +71,51 @@ nav ul{display:flex;list-style:none;gap:25px}
 nav li{cursor:pointer;transition:0.2s}
 nav li:hover{color:#E91841}
 
+/* --- language switcher styles (paste after .cart-btn) --- */
+.lang-btn{
+  cursor:pointer;
+  border:1px solid #E91841;
+  padding:6px 10px;
+  border-radius:20px;
+  transition:0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-width:40px;
+  font-weight:600;
+  background:transparent;
+  color:#fff;
+}
+.lang-btn:hover{ background:#E91841; color:#000; }
+
+.lang-wrap{ position:relative; }
+
+/* dropdown panel */
+.lang-panel{
+  position:absolute;
+  right:0;
+  top:48px;
+  background:#0a0a0a;
+  border:1px solid #222;
+  border-radius:10px;
+  padding:8px;
+  display:none;
+  min-width:120px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  z-index:3500;
+}
+.lang-panel.active{ display:block; }
+
+.lang-option{
+  padding:8px 10px;
+  border-radius:6px;
+  cursor:pointer;
+  color:#ccc;
+  font-weight:600;
+  text-align:center;
+}
+.lang-option:hover{ background:#111; color:#fff; }
+
 .cart-btn{
 cursor:pointer;
 border:1px solid #E91841;
@@ -80,13 +125,19 @@ transition:0.2s
 }
 .cart-btn:hover{background:#E91841}
 
-.container{padding:40px;max-width:1300px;margin:auto}
+.container{padding:20px;max-width:1300px;margin:auto}
 
 .hero{
-margin-bottom:60px;
-position:relative;
-transition:0.45s ease;
-}
+  /* center hero text vertically and horizontally but smaller height to reduce gap */
+  min-height: 38vh; /* reduced from near-fullscreen */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  margin-bottom:20px; /* smaller gap */
+  position:relative;
+  transition:0.45s ease;
+}  
 
 .hero-image{
 position:absolute;
@@ -101,12 +152,38 @@ background-position:center;
 transition:transform 0.2s;
 }
 
-.hero.hidden{
-margin-bottom:0;
-height:0;
-overflow:hidden;
+.thumbs{
+  display:flex;
+  gap:10px;
+  margin-top:15px;
 }
 
+.thumb{
+  width:60px;
+  height:60px;
+  object-fit:cover;
+  border-radius:6px;
+  cursor:pointer;
+  border:1px solid #222;
+  transition:0.2s;
+}
+
+.thumb:hover{
+  border-color:#E91841;
+  transform:scale(1.05);
+}
+.hero.hidden{
+  margin-bottom:0;
+  height:0;
+  min-height:0;   
+  padding:0;      
+  overflow:hidden;
+}
+
+.hero{
+  min-height: 38vh;
+  transition: all 0.45s ease;
+}
 
 .hero-text{
 max-width:600px;
@@ -131,7 +208,17 @@ pointer-events:none;
 }
 
 
-.section-title{font-size:30px;margin-bottom:30px}
+.section-title{font-size:30px;margin-bottom:20px}
+
+.bestseller-title{
+  font-size:36px;
+  color:#E91841;
+  font-weight:800;
+  text-align:center;
+  text-transform:uppercase;
+  margin-bottom:18px;
+  letter-spacing:1px;
+} 
 
 .category-title{
 font-size:30px;
@@ -367,6 +454,110 @@ pointer-events:none;
 transition:0.35s;
 }
 
+/* CHECKOUT MODAL - paste after .product-view styles */
+.checkout-modal {
+  position: fixed;
+  inset: 0;
+  display: none;              /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.65);
+  z-index: 4000;              /* above cart (3000) and product-view (2000) */
+  padding: 20px;
+}
+
+.checkout-modal.active {
+  display: flex;
+}
+
+.checkout-modal .modal-content {
+  width: 94%;
+  max-width: 1100px;
+  height: 90%;
+  background: #0a0a0a;
+  border: 1px solid #E91841;
+  border-radius: 12px;
+  padding: 24px;
+  overflow: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+  display: grid;
+  grid-template-columns: 1fr 420px; /* form | order summary */
+  gap: 24px;
+}
+
+@media (max-width: 900px) {
+  .checkout-modal .modal-content { grid-template-columns: 1fr; height: 92%; }
+}
+
+.checkout-modal .modal-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+  gap:12px;
+}
+.checkout-modal .close-checkout {
+  cursor:pointer;
+  font-size:20px;
+  color:#ccc;
+}
+
+.checkout-form {
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.checkout-form label{ font-size:13px; color:#bbb; margin-bottom:6px; }
+.checkout-form input, .checkout-form select, .checkout-form textarea {
+  background:#070707;
+  border:1px solid #222;
+  padding:10px 12px;
+  border-radius:8px;
+  color:#fff;
+  font-size:14px;
+}
+.checkout-form .two-cols {
+  display:flex;
+  gap:10px;
+}
+.checkout-form .two-cols input { flex:1; }
+
+.card-row { display:flex; gap:10px; }
+.card-row input { flex:1; }
+
+.order-summary {
+  background:#070707;
+  border:1px solid #1b1b1b;
+  border-radius:8px;
+  padding:16px;
+  height:fit-content;
+}
+.order-summary h3{ margin-bottom:10px; }
+.order-summary .summary-item{ display:flex; justify-content:space-between; margin-bottom:8px; color:#ccc; }
+.order-summary .total{ font-weight:700; color:#E91841; font-size:18px; margin-top:12px; }
+
+.checkout-submit {
+  margin-top:16px;
+  background:#E91841;
+  color:#fff;
+  border:none;
+  padding:12px 16px;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:600;
+}
+.checkout-submit:disabled {
+  opacity:0.5;
+  cursor:not-allowed;
+}
+
+.checkout-success {
+  text-align:center;
+  padding:20px;
+  color:#bdf7c9;
+  font-weight:600;
+}
+
 .product-view.active{
 opacity:1;
 pointer-events:auto;
@@ -415,17 +606,17 @@ color:#aaa;
 }
 
 .about{
-  margin-top:120px;
-  opacity:0;
-  transform:translateY(40px);
+  margin-top:40px;
+  opacity:1; /* FIX: always visible */
+  transform:translateY(0);
   transition:1s;
 
   /* Glass-style background */
-  background: rgba(255, 255, 255, 0.05); /* slight transparency */
-  backdrop-filter: blur(8px); /* blur effect behind the glass */
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
   padding: 30px;
   border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .about.visible{
@@ -438,6 +629,9 @@ color:#aaa;
   line-height:1.6;
   color:#bbb;
 }
+
+.strengths{margin-top:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.strengths .strength{background:rgba(255,255,255,0.02);padding:14px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);color:#ddd}
 
 .footer-divider{
 margin-top:80px;
@@ -473,6 +667,16 @@ color:#666
 
 }
 
+/* Featured bundles styles */
+.bundles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:60px}
+.bundle{background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:20px;cursor:pointer;transition:0.25s}
+.bundle:hover{border-color:#E91841;transform:translateY(-6px)}
+.bundle .bundle-image{height:140px;background:#111;border-radius:8px;margin-bottom:12px;background-size:contain;background-position:center;background-repeat:no-repeat;;}
+.bundle .bundle-items{font-size:13px;color:#bbb;margin-bottom:10px}
+.bundle .price{display:flex;align-items:center;gap:10px}
+.bundle .price .orig{text-decoration:line-through;color:#888}
+.bundle .price .sale{color:#E91841;font-weight:700}
+
 </style>
 
 
@@ -482,7 +686,7 @@ color:#666
 
 <header>
 <div class="logo-container">
-  <img src="image/logo.png" alt="Vixera Logo" class="logo-img">
+  <img src="image/logo.png" alt="Logo" class="logo-img">
   <div class="logo-text">
     <div class="logo">Vixera</div>
     <div class="slogan">"Feel Every Move"</div>
@@ -502,7 +706,19 @@ color:#666
 </ul>
 </nav>
 
-<div class="cart-btn" onclick="toggleCart()">Cart</div>
+<div class="header-controls" style="display:flex;gap:12px;align-items:center;">
+  <div class="cart-btn" id="cartBtn" onclick="toggleCart()">Cart</div>
+
+  <!-- Language selector -->
+  <div class="lang-wrap" style="position:relative;">
+    <div class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">EN</div>
+    <div class="lang-panel" id="langPanel" role="menu" aria-hidden="true">
+      <div class="lang-option" data-lang="en" role="menuitem">EN</div>
+      <div class="lang-option" data-lang="ru" role="menuitem">RU</div>
+      <div class="lang-option" data-lang="am" role="menuitem">AM</div>
+    </div>
+  </div>
+</div>
 </header>
 
 <div class="container">
@@ -525,6 +741,8 @@ Discover the Vixera ecosystem designed to elevate every move.
 
 
 <div id="categoryTitle" class="category-title"></div>
+
+<div class="bestseller-title">Bestseller</div>
 
 <div class="bestsellers" id="bestsellerSection">
 
@@ -554,11 +772,42 @@ Discover the Vixera ecosystem designed to elevate every move.
 
 </div>
 
-<div class="section-title">Store</div>
 
-<div class="products" id="productGrid">
+<!-- FEATURED BUNDLES (replaces the main "Store" area) -->
+<div class="section-title featured-title">Featured Bundles</div>
 
-<!-- NEW ITEMS -->
+<div class="bundles" id="featuredBundles">
+
+  <div class="bundle" onclick="openProduct('bundle_starter')">
+    <div class="bundle-image" style="background-image:url('image/bundle.jpg')"></div>
+    <div class="name">Starter Bundle</div>
+    <div class="bundle-items">Pulse Mouse + Phantom Keyboard + Glide Mouse Mat</div>
+    <div class="price"><span class="orig">$299</span><span class="sale">$229</span></div>
+    <button class="add-cart" onclick="event.stopPropagation(); addToCart('Starter Bundle')">Add</button>
+  </div>
+
+  <div class="bundle" onclick="openProduct('bundle_pro')">
+    <div class="bundle-image" style="background-image:url('image/bundle2.jpg')"></div>
+    <div class="name">Pro Bundle</div>
+    <div class="bundle-items">Shadow Mouse + Titan Keyboard + Glide Mat + Pulse Bungee</div>
+    <div class="price"><span class="orig">$389</span><span class="sale">$289</span></div>
+    <button class="add-cart" onclick="event.stopPropagation(); addToCart('Pro Bundle')">Add</button>
+  </div>
+
+  <div class="bundle" onclick="openProduct('bundle_ultimate')">
+    <div class="bundle-image" style="background-image:url('image/bundle3.jpg')"></div>
+    <div class="name">Ultimate Bundle</div>
+    <div class="bundle-items">Pulse Mouse + Titan Keyboard + Nova Headset + Glide XL Mat</div>
+    <div class="price"><span class="orig">$699</span><span class="sale">$549</span></div>
+    <button class="add-cart" onclick="event.stopPropagation(); addToCart('Ultimate Bundle')">Add</button>
+  </div>
+
+</div>
+
+<!-- Note: productGrid is still present (hidden on main) so category pages can show items -->
+<div id="productGrid" class="products" style="display:none;">
+  <!-- product elements kept in DOM so categories work; they will be shown when user opens a category -->
+  <!-- NEW ITEMS (kept) -->
 
 <div class="product" data-category="Mice" onclick="openProduct('mouse2')">
 <img src="image/mouse2.jpg">
@@ -680,11 +929,12 @@ Discover the Vixera ecosystem designed to elevate every move.
 
 </div>
 
+<!-- ABOUT / STRENGTHS -->
 <div class="about" id="aboutSection">
-<div class="section-title">About</div>
+<div class="section-title about-title">About</div>
 
 <p>
-Made by ERIK HOVHANNISYAN - Vixera is a modern technology marketplace focused on delivering premium PC accessories and gaming equipment. Our mission is to combine performance, design, and reliability into a seamless shopping experience for enthusiasts and professionals.
+Made by Erik Hovhannisyan - Vixera is a modern technology marketplace focused on delivering premium PC accessories and gaming equipment. Our mission is to combine performance, design, and reliability into a seamless shopping experience for enthusiasts and professionals.
 </p>
 
 </div>
@@ -701,6 +951,8 @@ Made by ERIK HOVHANNISYAN - Vixera is a modern technology marketplace focused on
 
 <footer>© 2026 Vixera. All rights reserved.</footer>
 
+
+
 <!-- CART -->
 <div class="cart" id="cart">
 
@@ -711,8 +963,73 @@ Made by ERIK HOVHANNISYAN - Vixera is a modern technology marketplace focused on
 
 <div class="cart-items" id="cartItems"></div>
 
-<button class="checkout" onclick="fakeCheckout()">Purchase</button>
+<button class="checkout" onclick="proceedToCheckout()">Purchase</button>
 
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-modal" id="checkoutModal" onclick="if(event.target===this) closeCheckout()">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+    <div>
+      <div class="modal-header">
+        <h2 id="checkoutTitle">Checkout</h2>
+        <div class="close-checkout" onclick="closeCheckout()">✕</div>
+      </div>
+
+      <form id="checkoutForm" class="checkout-form" onsubmit="event.preventDefault(); submitCheckout();">
+        <div>
+          <label for="fullName">Full name</label>
+          <input id="fullName" name="fullName" type="text" placeholder="John Doe" required>
+        </div>
+
+        <div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" placeholder="you@example.com" required>
+        </div>
+
+        <div>
+          <label for="address">Address</label>
+          <input id="address" name="address" type="text" placeholder="Street, house, apt" required>
+        </div>
+
+        <div class="two-cols">
+          <div>
+            <label for="city">City</label>
+            <input id="city" name="city" type="text" required>
+          </div>
+          <div>
+            <label for="postal">Postal code</label>
+            <input id="postal" name="postal" type="text" required>
+          </div>
+        </div>
+
+        <div>
+          <label for="country">Country</label>
+          <input id="country" name="country" type="text" placeholder="Country" required>
+        </div>
+
+        <hr style="border:none;border-top:1px solid #222;margin:12px 0;">
+
+        <label>Payment</label>
+        <div class="card-row">
+          <input id="cardNumber" name="cardNumber" type="text" inputmode="numeric" placeholder="Card number (test)" required>
+        </div>
+
+        <div class="two-cols">
+          <input id="cardExp" name="cardExp" type="text" placeholder="MM/YY" required>
+          <input id="cardCVC" name="cardCVC" type="text" placeholder="CVC" required>
+        </div>
+
+        <button id="checkoutSubmitBtn" class="checkout-submit" type="submit">Pay now</button>
+      </form>
+    </div>
+
+    <aside class="order-summary" id="orderSummary">
+      <h3>Order summary</h3>
+      <div id="summaryItems"></div>
+      <div class="total">Total: <span id="summaryTotal">$0</span></div>
+    </aside>
+  </div>
 </div>
 
 <!-- PRODUCT VIEW -->
@@ -734,193 +1051,410 @@ Made by ERIK HOVHANNISYAN - Vixera is a modern technology marketplace focused on
 
 
 <script>
+window.addEventListener('DOMContentLoaded', () => {
 
-  document.querySelectorAll(".product").forEach(card=>{
+  // ----- simple helpers & state -----
+  window.currentProduct = ""; /* FIX: make global for button access */
+  let cartList = [];
+  let currentLang = localStorage.getItem('vixeraLang') || 'en';
 
-card.addEventListener("mousemove",e=>{
+  // product data (keep as you had it) + new bundles
+  const products = {
+    mouse:{title:'Vixera Pulse Mouse',price:'$79',desc:'Ultra-precise esports mouse.',specs:'• 26,000 DPI sensor • 58g weight • 8000Hz polling', image:'image/mouse.jpg'},
+    mouse2:{title:'Vixera Shadow Mouse',price:'$89',desc:'Sleek and precise gaming mouse.',specs:'• 20,000 DPI sensor • 60g weight • RGB lighting', image:'image/mouse2.jpg'},
+    keyboard:{title:'Vixera Phantom Keyboard',price:'$129',desc:'Premium mechanical keyboard.',specs:'• Linear switches • Aluminum frame • RGB lighting', image:'image/keyboard.jpg'},
+    keyboard2:{title:'Vixera Titan Keyboard',price:'$149',desc:'Durable mechanical keyboard for gamers.',specs:'• Clicky switches • Aluminum frame • RGB lighting', image:'image/keyboard2.jpg'},
+    headset:{title:'Vixera Nova Headset',price:'$149',desc:'Immersive gaming headset.',specs:'• 50mm drivers • 7.1 surround • Noise cancelling mic', image:'image/headphones.jpg'},
+    headset2:{title:'Vixera Eclipse Headset',price:'$169',desc:'High-quality surround sound headset.',specs:'• 50mm drivers • 7.1 surround • Noise cancelling mic', image:'image/headphones2.jpg'},
+    laptop:{title:'Vixera Blade Laptop',price:'$1399',desc:'High performance gaming laptop.',specs:'• i7-14700H • RTX 4070 • 32GB RAM • 240Hz display', image:'image/laptop.jpg'},
+    laptop2:{title:'Vixera Storm Laptop',price:'$1499',desc:'Powerful gaming laptop with premium specs.',specs:'• i9-14900H • RTX 4080 • 32GB RAM • 360Hz display', image:'image/laptop2.jpg'},
+    chair1:{title:'Vixera Apex Chair',price:'$399',desc:'Ergonomic gaming chair built for long competitive sessions.',specs:'• Memory foam cushions • 4D armrests • Steel frame • Lumbar support', image:'image/chair.jpg'},
+    chair2:{title:'Vixera Titan Pro Chair',price:'$449',desc:'Premium gaming chair designed for maximum comfort.',specs:'• Magnetic headrest • Aluminum base • Premium leather • 165° recline', image:'image/chair2.jpg'},
+    mat:{title:'Vixera Glide Mouse Mat',price:'$39',desc:'Ultra smooth extended gaming surface.',specs:'• Micro-weave cloth • Anti-slip base • Water resistant • XL size', image:'image/mat.jpg'},
+    dock:{title:'Vixera Core Dock Station',price:'$89',desc:'Universal docking station for laptops.',specs:'• HDMI 4K • Ethernet • USB-C power delivery • 8 ports total', image:'image/dock.jpg'},
+    bungee:{title:'Vixera Pulse Mouse Bungee',price:'$29',desc:'Cable management system for smooth mouse movement.',specs:'• Flexible arm • Weighted base • Anti-slip grip', image:'image/bungee.jpg'},
+    hub:{title:'Vixera Link USB Hub',price:'$49',desc:'High-speed USB hub for expanding setups.',specs:'• 4 USB 3.2 ports • Aluminum build • Plug & play', image:'image/usb.jpg'},
 
-const rect=card.getBoundingClientRect()
+    // bundles (clickable / viewable in product view)
+    bundle_starter:{title:'Starter Bundle',price:'$229',desc:'Pulse Mouse + Phantom Keyboard + Glide Mouse Mat — save on the bundle.',specs:'Includes Pulse Mouse, Phantom Keyboard, Glide Mouse Mat', image:'image/bundle.jpg'},
+    bundle_pro:{title:'Pro Bundle',price:'$289',desc:'Shadow Mouse + Titan Keyboard + Glide Mat + Pulse Bungee — pro-level value.',specs:'Includes Shadow Mouse, Titan Keyboard, Glide Mat, Pulse Bungee', image:'image/bundle2.jpg'},
+    bundle_ultimate:{title:'Ultimate Bundle',price:'$549',desc:'Top-tier kit: Mouse, Keyboard, Headset, and XL Mat — best saving.',specs:'Includes Pulse Mouse, Titan Keyboard, Nova Headset, Glide XL Mat', image:'image/bundle3.jpg'}
+  };
 
-const x=e.clientX-rect.left
-const y=e.clientY-rect.top
+  // ----- translation map (kept from your script) -----
+  const translations = {
+    en: {
+      nav: ['Main','Headphones','Mice','Keyboards','Laptops','Chairs','Accessories'],
+      hero: { title: 'Build Your Ultimate Setup', desc: 'Precision gaming gear engineered for performance, speed, and immersion. Discover the Vixera ecosystem designed to elevate every move.' },
+      sectionFeatured: 'Featured Bundles',
+      sectionAbout: 'About',
+      cartTitle: 'Your Cart',
+      buttons: { purchase: 'Purchase', proceed: 'Proceed with purchase', add: 'Add', payNow: 'Pay now', checkout: 'Checkout' },
+      orderSummary: 'Order summary',
+      totalLabel: 'Total:',
+      form: { fullName: 'Full name', email: 'Email', address: 'Address', city: 'City', postal: 'Postal code', country: 'Country' }
+    },
+    ru: {
+      nav: ['Главная','Наушники','Мыши','Клавиатуры','Ноутбуки','Кресла','Аксессуары'],
+      hero: { title: 'Соберите свою идеальную сборку', desc: 'Профессиональное игровое оборудование, созданное для скорости, точности и полного погружения. Откройте для себя экосистему Vixera.' },
+      sectionFeatured: 'Рекомендуемые наборы',
+      sectionAbout: 'О нас',
+      cartTitle: 'Ваша корзина',
+      buttons: { purchase: 'Купить', proceed: 'Перейти к оплате', add: 'Добавить', payNow: 'Оплатить', checkout: 'Оформление' },
+      orderSummary: 'Сводка заказа',
+      totalLabel: 'Итого:',
+      form: { fullName: 'Полное имя', email: 'Эл. почта', address: 'Адрес', city: 'Город', postal: 'Почтовый индекс', country: 'Страна' }
+    },
+    am: {
+      nav: ['Գլխավոր','Ականջակալներ','Մկներ','Սեղնաշարեր','Նոութբուքներ','Աթոռներ','Աքսեսուարներ'],
+      hero: { title: 'Կառուցիր քո իդեալական սեթը', desc: 'Խիստ ճշգրիտ խաղային սարքեր՝ արագության, կատարողականի և ներգրավման համար. բացահայտի՛ր Vixera էկոհամակարգը։' },
+      sectionFeatured: 'Ընտրված փաթեթներ',
+      sectionAbout: 'Մեր մասին',
+      cartTitle: 'Ձեր զամբյուղը',
+      buttons: { purchase: 'Գնել', proceed: 'Շարունակել գնումը', add: 'Ավելացնել', payNow: 'Վճարել հիմա', checkout: 'Ստուգում' },
+      orderSummary: 'Պատվերի ամփոփում',
+      totalLabel: 'Ընդհանուր:',
+      form: { fullName: 'Անուն Ազգանուն', email: 'Էլ․ փոստ', address: 'Հասցե', city: 'Քաղաք', postal: 'Փոստային ինդեքս', country: 'Երկիր' }
+    }
+  };
 
-card.style.setProperty("--x",x+"px")
-card.style.setProperty("--y",y+"px")
+  // ----- UI node refs -----
+  const productView = document.getElementById("productView");
+  const productLayout = document.querySelector(".product-layout");
+  const checkoutModal = document.getElementById('checkoutModal');
+  const checkoutForm = document.getElementById('checkoutForm');
+  const summaryItemsEl = document.getElementById('summaryItems');
+  const summaryTotalEl = document.getElementById('summaryTotal');
+  const langBtn = document.getElementById('langBtn');
+  const langPanel = document.getElementById('langPanel');
 
-})
+  // ----- product hover radial (mouse-follow) -----
+  function attachHoverRadial() {
+    document.querySelectorAll(".product").forEach(card=>{
+      card.addEventListener("mousemove", e=>{
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty("--x", x + "px");
+        card.style.setProperty("--y", y + "px");
+      });
+    });
+  }
+  attachHoverRadial();
 
-})
+  // close product view when clicking outside layout
+  productView.addEventListener("click", function(e){
+    if(!productLayout.contains(e.target)){
+      productView.classList.remove("active");
+    }
+  });
 
-const productView = document.getElementById("productView")
-const productLayout = document.querySelector(".product-layout")
+  // ----- cart functions -----
+  function updateCart(){
+    const cartItemsEl = document.getElementById('cartItems');
+    let html = "";
+    cartList.forEach((item, index) => {
+      html += `<div class="cart-item">${item} <span class="remove" onclick="removeItem(${index})">✕</span></div>`;
+    });
+    cartItemsEl.innerHTML = html;
+  }
 
-productView.addEventListener("click", function(e){
+  // expose removeItem globally because generated markup uses onclick
+  window.removeItem = function(index){
+    cartList.splice(index,1);
+    updateCart();
+  };
 
-if(!productLayout.contains(e.target)){
-productView.classList.remove("active")
+  // central toggleCart (single definition)
+  function toggleCart(){
+    const cartEl = document.getElementById('cart');
+    cartEl.classList.toggle('active');
+
+    // update checkout button text using translations
+    const btn = document.querySelector('.checkout');
+    if(!btn) return;
+
+    if(cartEl.classList.contains('active')){
+      btn.innerText = translations[currentLang].buttons.proceed;
+    } else {
+      btn.innerText = translations[currentLang].buttons.purchase;
+    }
+  }
+
+  // expose for HTML use
+  window.toggleCart = toggleCart;
+
+  // addToCart and expose
+  function addToCart(item){
+    cartList.push(item);
+    updateCart();
+  }
+  window.addToCart = addToCart;
+
+  // ----- product open/close -----
+  function openProduct(id){
+    // safe guard
+    if(!products[id]) return;
+
+    window.currentProduct = products[id].title; /* FIX: ensure global updates */
+    document.getElementById('productTitle').innerText = products[id].title;
+    document.getElementById('productPrice').innerText = products[id].price;
+    document.getElementById('productDesc').innerText = products[id].desc;
+    document.getElementById('productSpecs').innerText = products[id].specs;
+const imageBox = document.querySelector(".product-image-large");
+const data = products[id];
+
+// if bundle has multiple images
+if(data.images){
+  imageBox.style.backgroundImage = `url('${data.images[0]}')`;
+
+  // create thumbnails
+  let thumbs = data.images.map((img, i) => 
+    `<img src="${img}" class="thumb" onclick="changeImage('${img}')">`
+  ).join("");
+
+  document.getElementById("productSpecs").innerHTML += `
+    <div class="thumbs">${thumbs}</div>
+  `;
+} else {
+  imageBox.style.backgroundImage = `url('${data.image}')`;
 }
+    productView.classList.add('active');
+  }
+  window.openProduct = openProduct;
 
-})
+  function closeProduct(){
+    productView.classList.remove('active');
+  }
+  window.closeProduct = closeProduct;
 
+  // ----- category / main view functions (expose globally) -----
+  function openCategory(category){
+    document.querySelector(".hero").classList.add("hidden");
+    document.getElementById("heroText").classList.add("hidden");
+    document.getElementById("bestsellerSection").style.display="none";
+    const bsTitle = document.querySelector('.bestseller-title');
+    if(bsTitle) bsTitle.style.display = 'none';
+    document.getElementById('featuredBundles').style.display = 'none';
 
+    const title = document.getElementById("categoryTitle");
+    title.innerText = category;
+    title.classList.add("show");
 
-let currentProduct=""
-let cartList=[]
-let currentCategoryIndex = 0
+    // show product grid and filter
+    const productGrid = document.getElementById('productGrid');
+    productGrid.style.display = 'grid';
+    const productsEls = document.querySelectorAll(".product");
+    productsEls.forEach(p=>{
+      if(p.dataset.category === category) p.style.display = "block";
+      else p.style.display = "none";
+    });
 
-const categoryOrder = [
-"Headphones",
-"Mice",
-"Keyboards",
-"Laptops",
-"Chairs",
-"Accessories"
-]
+    // ensure the page scrolls to top when opening a category
+    setTimeout(()=> window.scrollTo({top:0,behavior:'smooth'}), 50);
+  }
+  window.openCategory = openCategory; 
 
-function openCategory(category){
+  function showMain(){
+    document.querySelector(".hero").classList.remove("hidden");
+    document.getElementById("heroText").classList.remove("hidden");
+    document.getElementById("bestsellerSection").style.display="grid";
+    const bsTitle = document.querySelector('.bestseller-title');
+    if(bsTitle) bsTitle.style.display = 'block';
+    document.getElementById('featuredBundles').style.display = 'grid';
+    document.getElementById('productGrid').style.display = 'none';
+    document.getElementById("categoryTitle").classList.remove("show");
+    const productsEls = document.querySelectorAll(".product");
+    productsEls.forEach(p => p.style.display = "block");
+    // scroll back to top so header and hero are visible
+    setTimeout(()=> window.scrollTo({top:0,behavior:'smooth'}), 50);
+  }
+  window.showMain = showMain;
 
-  
-document.querySelector(".hero").classList.add("hidden")
-document.getElementById("heroText").classList.add("hidden")
+  // ----- checkout UI -----
+  function renderOrderSummary(){
+    summaryItemsEl.innerHTML = '';
+    let total = 0;
+    cartList.forEach((item) => {
+      let priceText = '$0';
+      const foundKey = Object.keys(products).find(k => products[k].title === item);
+      priceText = foundKey ? products[foundKey].price : '$0';
+      const numeric = parseFloat(priceText.replace(/[^0-9.]/g,'')) || 0;
+      total += numeric;
+      const row = document.createElement('div');
+      row.className = 'summary-item';
+      row.innerHTML = `<div>${item}</div><div>${priceText}</div>`;
+      summaryItemsEl.appendChild(row);
+    });
+    summaryTotalEl.innerText = `$${total.toFixed(2)}`;
+  }
 
+  function proceedToCheckout(){
+    if(!cartList || cartList.length === 0){
+      alert('Your cart is empty.');
+      return;
+    }
+    renderOrderSummary();
+    document.body.style.overflow = 'hidden';
+    checkoutModal.classList.add('active');
+  }
+  window.proceedToCheckout = proceedToCheckout;
 
-document.getElementById("bestsellerSection").style.display="none"
+  function closeCheckout(){
+    checkoutModal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  window.closeCheckout = closeCheckout;
 
+  function submitCheckout(){
+    const btn = document.getElementById('checkoutSubmitBtn');
+    btn.disabled = true;
+    btn.innerText = 'Processing...';
+    const formData = new FormData(checkoutForm);
+    const name = formData.get('fullName');
+    if(!name){
+      alert('Please fill name.');
+      btn.disabled = false;
+      btn.innerText = translations[currentLang].buttons.payNow || 'Pay now';
+      return;
+    }
+    setTimeout(() => {
+      checkoutModal.querySelector('.modal-content').innerHTML = `
+        <div style="grid-column:1 / -1; text-align:center; padding:40px;">
+          <div class="checkout-success">Thank you, ${escapeHtml(name)}! Your order was placed successfully.</div>
+          <p style="color:#bbb">A confirmation email has been (mock) sent to ${escapeHtml(formData.get('email') || 'your email')}.</p>
+          <button class="checkout-submit" onclick="finishCheckout()">Close</button>
+        </div>
+      `;
+      cartList = [];
+      updateCart();
+    }, 1100);
+  }
+  window.submitCheckout = submitCheckout;
 
-const title=document.getElementById("categoryTitle")
-title.innerText=category
-title.classList.add("show")
+  function finishCheckout(){
+    closeCheckout();
+    location.reload();
+  }
+  window.finishCheckout = finishCheckout;
 
-const products=document.querySelectorAll(".product")
+  function escapeHtml(str){
+    if(!str) return '';
+    return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); });
+  }
 
-products.forEach(p=>{
-if(p.dataset.category===category){
-p.style.display="block"
-}else{
-p.style.display="none"
-}
-})
+  // allow ESC to close checkout or cart
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape'){
+      if(checkoutModal && checkoutModal.classList.contains('active')) closeCheckout();
+      else if(document.getElementById('cart').classList.contains('active')) toggleCart();
+    }
+  });
 
-window.scrollTo({top:0,behavior:'smooth'})
+  // ----- language UI -----
+  function toggleLangPanel(e){
+    e && e.stopPropagation();
+    if(!langPanel) return;
+    const active = langPanel.classList.toggle('active');
+    langBtn.setAttribute('aria-expanded', active ? 'true' : 'false');
+    langPanel.setAttribute('aria-hidden', active ? 'false' : 'true');
+  }
+  langBtn && langBtn.addEventListener('click', toggleLangPanel);
 
-}
+  document.querySelectorAll('.lang-option').forEach(opt=>{
+    opt.addEventListener('click', (e)=>{
+      const lang = opt.dataset.lang;
+      setLanguage(lang);
+    });
+  });
 
+  document.addEventListener('click', (e)=>{
+    if(!document.querySelector('.lang-wrap')) return;
+    if(!document.querySelector('.lang-wrap').contains(e.target)){
+      langPanel.classList.remove('active');
+      langBtn.setAttribute('aria-expanded','false');
+      langPanel.setAttribute('aria-hidden','true');
+    }
+  });
 
-function showMain(){
+  function updateUITexts(){
+    const t = translations[currentLang];
+    const navLis = document.querySelectorAll('nav ul li');
+    navLis.forEach((li, idx) => { if(t.nav[idx]) li.innerText = t.nav[idx]; });
 
-document.querySelector(".hero").classList.remove("hidden")
-document.getElementById("heroText").classList.remove("hidden")
+    const heroText = document.getElementById('heroText');
+    if(heroText){
+      const h1 = heroText.querySelector('h1');
+      const p = heroText.querySelector('p');
+      if(h1) h1.innerText = t.hero.title;
+      if(p) p.innerText = t.hero.desc;
+    }
 
+    const featTitle = document.querySelector('.featured-title');
+    if(featTitle) featTitle.innerText = t.sectionFeatured;
 
-document.getElementById("bestsellerSection").style.display="grid"
+    const aboutTitle = document.querySelector('.about-title');
+    if(aboutTitle) aboutTitle.innerText = t.sectionAbout;
 
-document.getElementById("categoryTitle").classList.remove("show")
+    const cartH2 = document.querySelector('#cart h2');
+    if(cartH2) cartH2.innerText = t.cartTitle;
 
-const products=document.querySelectorAll(".product")
+    const cartEl = document.getElementById('cart');
+    const checkoutBtn = document.querySelector('.checkout');
+    if(checkoutBtn){
+      checkoutBtn.innerText = (cartEl && cartEl.classList.contains('active')) ? t.buttons.proceed : t.buttons.purchase;
+    }
 
-products.forEach(p=>{
-p.style.display="block"
-})
+    document.querySelectorAll('.add-cart').forEach(btn=>{
+      btn.innerText = t.buttons.add;
+    });
 
-window.scrollTo({top:0,behavior:'smooth'})
+    const orderSummary = document.querySelector('#orderSummary h3');
+    if(orderSummary) orderSummary.innerText = t.orderSummary;
+    const totalParent = document.querySelector('.order-summary .total');
+    if(totalParent) totalParent.childNodes[0] && (totalParent.childNodes[0].textContent = t.totalLabel + ' ');
 
-}
+    const map = {
+      fullName: t.form.fullName, email: t.form.email, address: t.form.address,
+      city: t.form.city, postal: t.form.postal, country: t.form.country
+    };
+    Object.keys(map).forEach(id => {
+      const label = document.querySelector(`label[for="${id}"]`);
+      if(label) label.innerText = map[id];
+    });
+  }
 
+  function setLanguage(lang){
+    if(!translations[lang]) return;
+    currentLang = lang;
+    localStorage.setItem('vixeraLang', lang);
+    document.getElementById('langBtn').innerText = lang.toUpperCase();
+    updateUITexts();
+    if(langPanel){
+      langPanel.classList.remove('active');
+      langBtn.setAttribute('aria-expanded','false');
+      langPanel.setAttribute('aria-hidden','true');
+    }
+  }
 
+  function initLanguage(){
+    const saved = localStorage.getItem('vixeraLang') || currentLang;
+    setLanguage(saved);
+  }
 
-function toggleCart(){
-document.getElementById('cart').classList.toggle('active')
-}
+  // ----- expose a few things globally used by inline handlers ----- 
+  // (we already assigned openProduct/addToCart/toggleCart/showMain/openCategory above to window)
+  // ensure removeItem also global (already done)
 
-function addToCart(item){
-cartList.push(item)
-updateCart()
-}
+  // final initialization
+  updateCart();     // render empty cart
+  initLanguage();   // apply translation and UI text
 
-function removeItem(index){
-cartList.splice(index,1)
-updateCart()
-}
+}); // end DOMContentLoaded
 
-function updateCart(){
-
-let html=""
-
-cartList.forEach((item,index)=>{
-html+=`<div class="cart-item">${item} <span class="remove" onclick="removeItem(${index})">✕</span></div>`
-})
-
-cartItems.innerHTML=html
-
-}
-
-function fakeCheckout(){
-alert("Thank you for your purchase!")
-cartList=[]
-updateCart()
-}
-
-const products = {
-
-mouse:{title:'Vixera Pulse Mouse',price:'$79',desc:'Ultra-precise esports mouse.',specs:'• 26,000 DPI sensor • 58g weight • 8000Hz polling', image:'image/mouse.jpg'},
-
-mouse2:{title:'Vixera Shadow Mouse',price:'$89',desc:'Sleek and precise gaming mouse.',specs:'• 20,000 DPI sensor • 60g weight • RGB lighting', image:'image/mouse2.jpg'},
-
-keyboard:{title:'Vixera Phantom Keyboard',price:'$129',desc:'Premium mechanical keyboard.',specs:'• Linear switches • Aluminum frame • RGB lighting', image:'image/keyboard.jpg'},
-
-keyboard2:{title:'Vixera Titan Keyboard',price:'$149',desc:'Durable mechanical keyboard for gamers.',specs:'• Clicky switches • Aluminum frame • RGB lighting', image:'image/keyboard2.jpg'},
-
-headset:{title:'Vixera Nova Headset',price:'$149',desc:'Immersive gaming headset.',specs:'• 50mm drivers • 7.1 surround • Noise cancelling mic', image:'image/headphones.jpg'},
-
-headset2:{title:'Vixera Eclipse Headset',price:'$169',desc:'High-quality surround sound headset.',specs:'• 50mm drivers • 7.1 surround • Noise cancelling mic', image:'image/headphones2.jpg'},
-
-laptop:{title:'Vixera Blade Laptop',price:'$1399',desc:'High performance gaming laptop.',specs:'• i7-14700H • RTX 4070 • 32GB RAM • 240Hz display', image:'image/laptop.jpg'},
-
-laptop2:{title:'Vixera Storm Laptop',price:'$1499',desc:'Powerful gaming laptop with premium specs.',specs:'• i9-14900H • RTX 4080 • 32GB RAM • 360Hz display', image:'image/laptop2.jpg'},
-
-chair1:{title:'Vixera Apex Chair',price:'$399',desc:'Ergonomic gaming chair built for long competitive sessions.',specs:'• Memory foam cushions • 4D armrests • Steel frame • Lumbar support', image:'image/chair.jpg'},
-
-chair2:{title:'Vixera Titan Pro Chair',price:'$449',desc:'Premium gaming chair designed for maximum comfort.',specs:'• Magnetic headrest • Aluminum base • Premium leather • 165° recline', image:'image/chair2.jpg'},
-
-mat:{title:'Vixera Glide Mouse Mat',price:'$39',desc:'Ultra smooth extended gaming surface.',specs:'• Micro-weave cloth • Anti-slip base • Water resistant • XL size', image:'image/mat.jpg'},
-
-dock:{title:'Vixera Core Dock Station',price:'$89',desc:'Universal docking station for laptops.',specs:'• HDMI 4K • Ethernet • USB-C power delivery • 8 ports total', image:'image/dock.jpg'},
-
-bungee:{title:'Vixera Pulse Mouse Bungee',price:'$29',desc:'Cable management system for smooth mouse movement.',specs:'• Flexible arm • Weighted base • Anti-slip grip', image:'image/bungee.jpg'},
-
-hub:{title:'Vixera Link USB Hub',price:'$49',desc:'High-speed USB hub for expanding setups.',specs:'• 4 USB 3.2 ports • Aluminum build • Plug & play', image:'image/usb.jpg'}
-
-}
-
-function openProduct(id){
-  currentProduct = products[id].title;
-  
-  document.getElementById('productTitle').innerText = products[id].title;
-  document.getElementById('productPrice').innerText = products[id].price;
-  document.getElementById('productDesc').innerText = products[id].desc;
-  document.getElementById('productSpecs').innerText = products[id].specs;
-  
-  // Set the image in the large view
-  document.querySelector(".product-image-large").style.backgroundImage = `url('${products[id].image}')`;
-  
-  document.getElementById('productView').classList.add('active');
-}
-
-
-
-function closeProduct(){
-productView.classList.remove('active')
-
-
-}
-
-const observer=new IntersectionObserver(entries=>{
-entries.forEach(entry=>{
-if(entry.isIntersecting){entry.target.classList.add('visible')}
-})
-})
-
-observer.observe(document.getElementById('aboutSection'))
+window.changeImage = function(src){
+  document.querySelector(".product-image-large").style.backgroundImage = `url('${src}')`;
+};
 
 </script>
 
