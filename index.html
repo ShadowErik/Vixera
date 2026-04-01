@@ -7,12 +7,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-html {
-  zoom: 1.5;
-}
+
+
 
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Montserrat',sans-serif}
 body{
+padding-top: 90px;
 background:#000;
 color:#fff;
 background-image:url("image/background-01-01.png");
@@ -46,13 +46,23 @@ top:0;
 width:6px;
 height:100%;
 background:#E91841;
-z-index:0
+z-index:9999;
 }
 body::before{left:0}
 body::after{right:0}
 
+
+@media (max-width: 768px) {
+  body {
+    padding-top: 140px; /* increase this */
+  }
+}
+
 header{
-position:sticky;
+position:fixed;
+top:0;
+left:0;
+width:100%; 
 top:0;
 background:#000;
 padding:20px 40px;
@@ -175,6 +185,10 @@ transition:transform 0.2s;
   min-height:0;
   padding:0;
   overflow:hidden;
+}
+
+body {
+  overflow-x: hidden;
 }
 
 .hero{
@@ -301,20 +315,6 @@ cursor:pointer
 .product{
 position:relative;
 overflow:hidden;
-}
-
-.product::before{
-content:"";
-position:absolute;
-inset:0;
-background:radial-gradient(circle at var(--x) var(--y),rgba(233,24,65,0.35),transparent 10%);
-opacity:0;
-transition:opacity 0.25s;
-pointer-events:none;
-}
-
-.product:hover::before{
-opacity:1;
 }
 
 .product{
@@ -647,6 +647,106 @@ border-top:1px solid #222;
 text-align:center;
 color:#666
 }
+
+
+@media (max-width: 768px) {
+  .hero {
+    min-height: auto;
+    padding: 20px 10px;
+  }
+
+  .hero-text h1 {
+    font-size: 28px;
+  }
+
+  .hero-text p {
+    font-size: 14px;
+  }
+
+  .hero-image {
+    display: none; 
+  }
+}
+
+@media (max-width: 768px) {
+  .best-item {
+    padding: 16px;
+  }
+
+  .best-item img {
+    height: 140px;
+  }
+
+  .best-name {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 12px 16px;
+  }
+
+@media (max-width: 768px) {
+  nav {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  nav ul {
+    display: flex;
+    gap: 15px;
+    padding: 10px 0;
+    margin: 0;
+    list-style: none;
+    width: max-content; 
+  }
+
+  nav li {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-size: 14px;
+  }
+
+  nav::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+  .header-controls {
+    gap: 8px;
+  }
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+@media (min-width: 1025px) {
+  html {
+    zoom: 1.5;
+  }
+}
+
+@media (max-width: 1024px) {
+  html {
+    zoom: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .header-controls {
+    align-self: flex-end;
+  }
+}
+
+
 
 .bundles{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;margin-bottom:60px}
 .bundle{background:#0a0a0a;border:1px solid #222;border-radius:12px;padding:20px;cursor:pointer;transition:0.25s}
@@ -1060,19 +1160,6 @@ window.addEventListener('DOMContentLoaded', () => {
   const summaryTotalEl = document.getElementById('summaryTotal');
   const langBtn = document.getElementById('langBtn');
   const langPanel = document.getElementById('langPanel');
-
-  function attachHoverRadial() {
-    document.querySelectorAll(".product").forEach(card=>{
-      card.addEventListener("mousemove", e=>{
-        const rect = card.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        card.style.setProperty("--x", x + "px");
-        card.style.setProperty("--y", y + "px");
-      });
-    });
-  }
-  attachHoverRadial();
 
   productView.addEventListener("click", function(e){
     if(!productLayout.contains(e.target)){
