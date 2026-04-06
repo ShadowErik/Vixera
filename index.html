@@ -32,7 +32,9 @@
 </nav>
 
 <div class="header-controls" style="display:flex;gap:12px;align-items:center;">
-  <div class="cart-btn" id="cartBtn" onclick="toggleCart()">Cart</div>
+<div class="cart-btn" id="cartBtn" onclick="toggleCart()">
+  Cart <span id="cartCount" class="cart-count">0</span>
+</div>
 
   <div class="lang-wrap" style="position:relative;">
     <div class="lang-btn" id="langBtn" aria-haspopup="true" aria-expanded="false">EN</div>
@@ -240,11 +242,23 @@
 
   <div class="footer-divider"></div>
 
-  <div class="footer-links">
-    <div>Support</div>
-    <div>Contact Us</div>
-    <div>Software</div>
+<div class="footer-links">
+  <button type="button" class="footer-link" onclick="openInfoPage('support')">Support</button>
+  <button type="button" class="footer-link" onclick="openInfoPage('contact')">Contact Us</button>
+  <button type="button" class="footer-link" onclick="openInfoPage('software')">Software</button>
+</div>
+
+
+
+<div class="info-modal" id="siteModal" aria-hidden="true" onclick="if(event.target===this) closeInfoPage()">
+  <div class="info-modal-content" role="dialog" aria-modal="true" aria-labelledby="siteModalTitle">
+    <div class="info-top">
+      <h2 id="siteModalTitle"></h2>
+      <div class="info-close" onclick="closeInfoPage()">✕</div>
+    </div>
+    <div id="siteModalBody"></div>
   </div>
+</div>
 
 </div>
 
@@ -341,9 +355,11 @@
 
 <script>
 window.addEventListener('DOMContentLoaded', () => {
-  window.currentProduct = "";
+  window.currentProduct = '';
+
   let cartList = [];
   let currentLang = localStorage.getItem('vixeraLang') || 'en';
+  let currentCategory = 'main';
 
   const products = {
     mouse:{title:'Vixera Pulse Mouse',price:'$79',desc:'Ultra-precise esports mouse.',specs:'• 26,000 DPI sensor • 58g weight • 8000Hz polling', image:'image/mouse.jpg'},
@@ -368,171 +384,515 @@ window.addEventListener('DOMContentLoaded', () => {
   const translations = {
     en: {
       nav: ['Main','Headphones','Mice','Keyboards','Laptops','Chairs','Accessories'],
-      hero: { title: 'Build Your Ultimate Setup', desc: 'Precision gaming gear engineered for performance, speed, and immersion. Discover the Vixera ecosystem designed to elevate every move.' },
+      categories: {
+        Headphones: 'Headphones',
+        Mice: 'Mice',
+        Keyboards: 'Keyboards',
+        Laptops: 'Laptops',
+        Chairs: 'Chairs',
+        Accessories: 'Accessories'
+      },
+      hero: {
+        title: 'Build Your Ultimate Setup',
+        desc: 'Precision gaming gear engineered for performance, speed, and immersion. Discover the Vixera ecosystem designed to elevate every move.'
+      },
+      bestsellerTitle: 'Bestseller',
       sectionFeatured: 'Featured Bundles',
       sectionAbout: 'About',
+      aboutText: 'Made by Erik Hovhannisyan - Vixera is a modern technology marketplace focused on delivering premium PC accessories and gaming equipment. Our mission is to combine performance, design, and reliability into a seamless shopping experience for enthusiasts and professionals.',
       cartTitle: 'Your Cart',
-      buttons: { purchase: 'Purchase', proceed: 'Proceed with purchase', add: 'Add', payNow: 'Pay now', checkout: 'Checkout' },
+      buttons: {
+        add: 'Add',
+        addToCart: 'Add To Cart',
+        purchase: 'Purchase',
+        proceed: 'Proceed with purchase',
+        payNow: 'Pay now'
+      },
       orderSummary: 'Order summary',
       totalLabel: 'Total:',
-      form: { fullName: 'Full name', email: 'Email', address: 'Address', city: 'City', postal: 'Postal code', country: 'Country' }
+      footer: {
+        support: 'Support',
+        contact: 'Contact Us',
+        software: 'Software',
+        copyright: '© 2026 Vixera. All rights reserved.'
+      },
+      form: {
+        fullName: 'Full name',
+        email: 'Email',
+        address: 'Address',
+        city: 'City',
+        postal: 'Postal code',
+        country: 'Country'
+      },
+      info: {
+        support: {
+          title: 'Support',
+          body: `
+            <div class="info-grid">
+              <div class="info-card">
+                <h3>Help Center</h3>
+                <p>Keyboard lighting, mouse software, headset setup, and download issues.</p>
+              </div>
+              <div class="info-card">
+                <h3>Common Topics</h3>
+                <p>Installation, firmware updates, RGB control, and device pairing.</p>
+              </div>
+              <div class="info-card">
+                <h3>Need faster help?</h3>
+                <p>Email support@vixera.com or use the Contact Us section.</p>
+              </div>
+            </div>
+          `
+        },
+        contact: {
+          title: 'Contact Us',
+          body: `
+            <div class="info-grid">
+              <div class="info-card">
+                <h3>Email</h3>
+                <p><a href="mailto:support@vixera.com" style="color:#fff;">support@vixera.com</a></p>
+              </div>
+              <div class="info-card">
+                <h3>Phone</h3>
+                <p>+1 (000) 123-4567</p>
+              </div>
+              <div class="info-card">
+                <h3>Message</h3>
+                <p>For product help, orders, or software questions, contact the team anytime.</p>
+              </div>
+            </div>
+          `
+        },
+        software: {
+          title: 'Software',
+          body: `
+            <div class="download-list">
+              <a class="download-item" href="software/vixera-phantom-keyboard-software.zip" download>
+                <div>
+                  <strong>Vixera Keyboard Software</strong><br>
+                  <span>RGB lighting, macros, key mapping</span>
+                </div>
+                <span>Download</span>
+              </a>
+              <a class="download-item" href="software/vixera-pulse-mouse-software.zip" download>
+                <div>
+                  <strong>Vixera Mouse Software</strong><br>
+                  <span>DPI settings, button customization, polling control</span>
+                </div>
+                <span>Download</span>
+              </a>
+              <a class="download-item" href="software/vixera-nova-headset-software.zip" download>
+                <div>
+                  <strong>Vixera Headset Software</strong><br>
+                  <span>Equalizer presets, mic control, sound profiles</span>
+                </div>
+                <span>Download</span>
+              </a>
+            </div>
+          `
+        }
+      }
     },
+
     ru: {
       nav: ['Главная','Наушники','Мыши','Клавиатуры','Ноутбуки','Кресла','Аксессуары'],
-      hero: { title: 'Соберите свою идеальную сборку', desc: 'Профессиональное игровое оборудование, созданное для скорости, точности и полного погружения. Откройте для себя экосистему Vixera.' },
+      categories: {
+        Headphones: 'Наушники',
+        Mice: 'Мыши',
+        Keyboards: 'Клавиатуры',
+        Laptops: 'Ноутбуки',
+        Chairs: 'Кресла',
+        Accessories: 'Аксессуары'
+      },
+      hero: {
+        title: 'Соберите свою идеальную сборку',
+        desc: 'Профессиональное игровое оборудование, созданное для скорости, точности и полного погружения. Откройте для себя экосистему Vixera.'
+      },
+      bestsellerTitle: 'Хит продаж',
       sectionFeatured: 'Рекомендуемые наборы',
       sectionAbout: 'О нас',
+      aboutText: 'Создано Эриком Оганнисяном — Vixera это современный технологический магазин, ориентированный на премиальные PC-аксессуары и игровое оборудование. Наша цель — объединить производительность, дизайн и надежность в удобном магазине для энтузиастов и профессионалов.',
       cartTitle: 'Ваша корзина',
-      buttons: { purchase: 'Купить', proceed: 'Перейти к оплате', add: 'Добавить', payNow: 'Оплатить', checkout: 'Оформление' },
+      buttons: {
+        add: 'Добавить',
+        addToCart: 'Добавить в корзину',
+        purchase: 'Купить',
+        proceed: 'Перейти к оформлению',
+        payNow: 'Оплатить сейчас'
+      },
       orderSummary: 'Сводка заказа',
       totalLabel: 'Итого:',
-      form: { fullName: 'Полное имя', email: 'Эл. почта', address: 'Адрес', city: 'Город', postal: 'Почтовый индекс', country: 'Страна' }
+      footer: {
+        support: 'Поддержка',
+        contact: 'Связаться с нами',
+        software: 'ПО',
+        copyright: '© 2026 Vixera. Все права защищены.'
+      },
+      form: {
+        fullName: 'Полное имя',
+        email: 'Эл. почта',
+        address: 'Адрес',
+        city: 'Город',
+        postal: 'Почтовый индекс',
+        country: 'Страна'
+      },
+      info: {
+        support: {
+          title: 'Поддержка',
+          body: `
+            <div class="info-grid">
+              <div class="info-card">
+                <h3>Центр помощи</h3>
+                <p>Подсветка клавиатуры, ПО для мыши, настройка гарнитуры и проблемы со скачиванием.</p>
+              </div>
+              <div class="info-card">
+                <h3>Частые темы</h3>
+                <p>Установка, обновления прошивки, управление RGB и подключение устройств.</p>
+              </div>
+              <div class="info-card">
+                <h3>Нужна быстрая помощь?</h3>
+                <p>Пишите на support@vixera.com или используйте раздел "Связаться с нами".</p>
+              </div>
+            </div>
+          `
+        },
+        contact: {
+          title: 'Связаться с нами',
+          body: `
+            <div class="info-grid">
+              <div class="info-card">
+                <h3>Email</h3>
+                <p><a href="mailto:support@vixera.com" style="color:#fff;">support@vixera.com</a></p>
+              </div>
+              <div class="info-card">
+                <h3>Телефон</h3>
+                <p>+1 (000) 123-4567</p>
+              </div>
+              <div class="info-card">
+                <h3>Сообщение</h3>
+                <p>По вопросам товаров, заказов или ПО свяжитесь с командой в любое время.</p>
+              </div>
+            </div>
+          `
+        },
+        software: {
+          title: 'ПО',
+          body: `
+            <div class="download-list">
+              <a class="download-item" href="software/vixera-phantom-keyboard-software.zip" download>
+                <div>
+                  <strong>ПО для клавиатуры Vixera</strong><br>
+                  <span>RGB-подсветка, макросы, переназначение клавиш</span>
+                </div>
+                <span>Скачать</span>
+              </a>
+              <a class="download-item" href="software/vixera-pulse-mouse-software.zip" download>
+                <div>
+                  <strong>ПО для мыши Vixera</strong><br>
+                  <span>Настройка DPI, кнопок и частоты опроса</span>
+                </div>
+                <span>Скачать</span>
+              </a>
+              <a class="download-item" href="software/vixera-nova-headset-software.zip" download>
+                <div>
+                  <strong>ПО для гарнитуры Vixera</strong><br>
+                  <span>Эквалайзер, микрофон, звуковые профили</span>
+                </div>
+                <span>Скачать</span>
+              </a>
+            </div>
+          `
+        }
+      }
     },
+
     am: {
-      nav: ['Գլխավոր','Ականջակալներ','Մկներ','Սեղնաշարեր','Նոութբուքներ','Աթոռներ','Աքսեսուարներ'],
-      hero: { title: 'Կառուցիր քո իդեալական սեթը', desc: 'Խիստ ճշգրիտ խաղային սարքեր՝ արագության, կատարողականի և ներգրավման համար. բացահայտի՛ր Vixera էկոհամակարգը։' },
+      nav: ['Գլխավոր','Ականջակալներ','Մկներ','Ստեղնաշարեր','Նոութբուքեր','Աթոռներ','Աքսեսուարներ'],
+      categories: {
+        Headphones: 'Ականջակալներ',
+        Mice: 'Մկներ',
+        Keyboards: 'Ստեղնաշարեր',
+        Laptops: 'Նոութբուքեր',
+        Chairs: 'Աթոռներ',
+        Accessories: 'Աքսեսուարներ'
+      },
+      hero: {
+        title: 'Կառուցիր քո իդեալական սեթը',
+        desc: 'Խիստ ճշգրիտ խաղային սարքեր՝ արագության, կատարողականի և ներգրավման համար։ Բացահայտիր Vixera էկոհամակարգը։'
+      },
+      bestsellerTitle: 'Լավագույն վաճառք',
       sectionFeatured: 'Ընտրված փաթեթներ',
       sectionAbout: 'Մեր մասին',
+      aboutText: 'Ստեղծված է Էրիկ Հովհաննիսյանի կողմից — Vixera-ն ժամանակակից տեխնոլոգիական շուկա է, որը կենտրոնացած է բարձրակարգ համակարգչային աքսեսուարների և խաղային սարքավորումների վրա։ Մեր նպատակն է համատեղել կատարողականը, դիզայնը և հուսալիությունը մեկ հարմարավետ գնումների փորձի մեջ։',
       cartTitle: 'Ձեր զամբյուղը',
-      buttons: { purchase: 'Գնել', proceed: 'Շարունակել գնումը', add: 'Ավելացնել', payNow: 'Վճարել հիմա', checkout: 'Ստուգում' },
+      buttons: {
+        add: 'Ավելացնել',
+        addToCart: 'Ավելացնել զամբյուղ',
+        purchase: 'Գնել',
+        proceed: 'Շարունակել գնումը',
+        payNow: 'Վճարել հիմա'
+      },
       orderSummary: 'Պատվերի ամփոփում',
       totalLabel: 'Ընդհանուր:',
-      form: { fullName: 'Անուն Ազգանուն', email: 'Էլ․ փոստ', address: 'Հասցե', city: 'Քաղաք', postal: 'Փոստային ինդեքս', country: 'Երկիր' }
+      footer: {
+        support: 'Աջակցություն',
+        contact: 'Կապ մեզ հետ',
+        software: 'Ծրագրեր',
+        copyright: '© 2026 Vixera. Բոլոր իրավունքները պաշտպանված են։'
+      },
+      form: {
+        fullName: 'Անուն Ազգանուն',
+        email: 'Էլ․ փոստ',
+        address: 'Հասցե',
+        city: 'Քաղաք',
+        postal: 'Փոստային ինդեքս',
+        country: 'Երկիր'
+      },
+      info: {
+        support: {
+          title: 'Աջակցություն',
+          body: `
+            <div class="info-grid">
+              <div class="info-card">
+                <h3>Օգնության կենտրոն</h3>
+                <p>Ստեղնաշարի լուսավորություն, մկնիկի ծրագրեր, ականջակալների կարգավորում և ներբեռնման խնդիրներ։</p>
+              </div>
+              <div class="info-card">
+                <h3>Հաճախ հանդիպող թեմաներ</h3>
+                <p>Տեղադրում, firmware թարմացումներ, RGB կառավարում և սարքերի միացում։</p>
+              </div>
+              <div class="info-card">
+                <h3>Ավելի արագ օգնությո՞ւն է պետք</h3>
+                <p>Գրեք support@vixera.com կամ օգտագործեք «Կապ մեզ հետ» բաժինը։</p>
+              </div>
+            </div>
+          `
+        },
+        contact: {
+          title: 'Կապ մեզ հետ',
+          body: `
+            <div class="info-grid">
+              <div class="info-card">
+                <h3>Էլ․ փոստ</h3>
+                <p><a href="mailto:support@vixera.com" style="color:#fff;">support@vixera.com</a></p>
+              </div>
+              <div class="info-card">
+                <h3>Հեռախոս</h3>
+                <p>+1 (000) 123-4567</p>
+              </div>
+              <div class="info-card">
+                <h3>Հաղորդագրություն</h3>
+                <p>Ապրանքների, պատվերների կամ ծրագրերի հարցերով կապվեք թիմի հետ ցանկացած ժամանակ։</p>
+              </div>
+            </div>
+          `
+        },
+        software: {
+          title: 'Ծրագրեր',
+          body: `
+            <div class="download-list">
+              <a class="download-item" href="software/vixera-phantom-keyboard-software.zip" download>
+                <div>
+                  <strong>Vixera ստեղնաշարի ծրագիր</strong><br>
+                  <span>RGB լուսավորություն, մակրոներ, ստեղների կարգավորում</span>
+                </div>
+                <span>Ներբեռնել</span>
+              </a>
+              <a class="download-item" href="software/vixera-pulse-mouse-software.zip" download>
+                <div>
+                  <strong>Vixera մկնիկի ծրագիր</strong><br>
+                  <span>DPI կարգավորումներ, կոճակների փոփոխում, polling control</span>
+                </div>
+                <span>Ներբեռնել</span>
+              </a>
+              <a class="download-item" href="software/vixera-nova-headset-software.zip" download>
+                <div>
+                  <strong>Vixera ականջակալների ծրագիր</strong><br>
+                  <span>Էքվալայզեր, միկրոֆոնի կառավարում, ձայնային պրոֆիլներ</span>
+                </div>
+                <span>Ներբեռնել</span>
+              </a>
+            </div>
+          `
+        }
+      }
     }
   };
 
-  const productView = document.getElementById("productView");
-  const productLayout = document.querySelector(".product-layout");
+  const productView = document.getElementById('productView');
+  const productLayout = document.querySelector('.product-layout');
   const checkoutModal = document.getElementById('checkoutModal');
   const checkoutForm = document.getElementById('checkoutForm');
   const summaryItemsEl = document.getElementById('summaryItems');
   const summaryTotalEl = document.getElementById('summaryTotal');
   const langBtn = document.getElementById('langBtn');
   const langPanel = document.getElementById('langPanel');
+  const siteModal = document.getElementById('siteModal');
+  const siteModalTitle = document.getElementById('siteModalTitle');
+  const siteModalBody = document.getElementById('siteModalBody');
 
-  productView.addEventListener("click", function(e){
-    if(!productLayout.contains(e.target)){
-      productView.classList.remove("active");
-    }
-  });
+  function t() {
+    return translations[currentLang];
+  }
 
-  function updateCart(){
+  function categoryLabel(category) {
+    return (t().categories && t().categories[category]) ? t().categories[category] : category;
+  }
+
+  function updateCart() {
     const cartItemsEl = document.getElementById('cartItems');
-    let html = "";
-    cartList.forEach((item, index) => {
-      html += `<div class="cart-item">${item} <span class="remove" onclick="removeItem(${index})">✕</span></div>`;
-    });
+    const cartCountEl = document.getElementById('cartCount');
+    const html = cartList.map((item, index) => {
+      return `<div class="cart-item">${item} <span class="remove" onclick="removeItem(${index})">✕</span></div>`;
+    }).join('');
+
     cartItemsEl.innerHTML = html;
+    if (cartCountEl) cartCountEl.innerText = cartList.length;
   }
 
-  window.removeItem = function(index){
-    cartList.splice(index,1);
-    updateCart();
-  };
-
-  function toggleCart(){
-    const cartEl = document.getElementById('cart');
-    cartEl.classList.toggle('active');
-    const btn = document.querySelector('.checkout');
-    if(!btn) return;
-    if(cartEl.classList.contains('active')){
-      btn.innerText = translations[currentLang].buttons.proceed;
-    } else {
-      btn.innerText = translations[currentLang].buttons.purchase;
-    }
-  }
-  window.toggleCart = toggleCart;
-
-  function addToCart(item){
-    cartList.push(item);
-    updateCart();
-  }
-  window.addToCart = addToCart;
-
-  function openProduct(id){
-    if(!products[id]) return;
-    window.currentProduct = products[id].title;
-    document.getElementById('productTitle').innerText = products[id].title;
-    document.getElementById('productPrice').innerText = products[id].price;
-    document.getElementById('productDesc').innerText = products[id].desc;
-    document.getElementById('productSpecs').innerText = products[id].specs;
-    const imageBox = document.querySelector(".product-image-large");
-    const data = products[id];
-    if(data.images){
-      imageBox.style.backgroundImage = `url('${data.images[0]}')`;
-      let thumbs = data.images.map((img) =>
-        `<img src="${img}" class="thumb" onclick="changeImage('${img}')">`
-      ).join("");
-      document.getElementById("productSpecs").innerHTML += `<div class="thumbs">${thumbs}</div>`;
-    } else {
-      imageBox.style.backgroundImage = `url('${data.image}')`;
-    }
-    productView.classList.add('active');
-  }
-  window.openProduct = openProduct;
-
-  function closeProduct(){
-    productView.classList.remove('active');
-  }
-  window.closeProduct = closeProduct;
-
-  function openCategory(category){
-    document.querySelector(".hero").classList.add("hidden");
-    document.getElementById("heroText").classList.add("hidden");
-    document.getElementById("bestsellerSection").style.display="none";
-    const bsTitle = document.querySelector('.bestseller-title');
-    if(bsTitle) bsTitle.style.display = 'none';
-    document.getElementById('featuredBundles').style.display = 'none';
-    document.querySelector('.featured-title').style.display = 'none';
-    const title = document.getElementById("categoryTitle");
-    title.innerText = category;
-    title.classList.add("show");
-    const productGrid = document.getElementById('productGrid');
-    productGrid.style.display = 'grid';
-    const productsEls = document.querySelectorAll(".product");
-    productsEls.forEach(p=>{
-      if(p.dataset.category === category) p.style.display = "block";
-      else p.style.display = "none";
-    });
-    setTimeout(()=> window.scrollTo({top:0,behavior:'smooth'}), 50);
-  }
-  window.openCategory = openCategory;
-
-  function showMain(){
-    document.querySelector(".hero").classList.remove("hidden");
-    document.getElementById("heroText").classList.remove("hidden");
-    document.getElementById("bestsellerSection").style.display="grid";
-    const bsTitle = document.querySelector('.bestseller-title');
-    if(bsTitle) bsTitle.style.display = 'block';
-    document.getElementById('featuredBundles').style.display = 'grid';
-    document.querySelector('.featured-title').style.display = 'block';
-    document.getElementById('productGrid').style.display = 'none';
-    document.getElementById("categoryTitle").classList.remove("show");
-    const productsEls = document.querySelectorAll(".product");
-    productsEls.forEach(p => p.style.display = "block");
-    setTimeout(()=> window.scrollTo({top:0,behavior:'smooth'}), 50);
-  }
-  window.showMain = showMain;
-
-  function renderOrderSummary(){
+  function renderOrderSummary() {
     summaryItemsEl.innerHTML = '';
     let total = 0;
+
     cartList.forEach((item) => {
-      let priceText = '$0';
       const foundKey = Object.keys(products).find(k => products[k].title === item);
-      priceText = foundKey ? products[foundKey].price : '$0';
-      const numeric = parseFloat(priceText.replace(/[^0-9.]/g,'')) || 0;
+      const priceText = foundKey ? products[foundKey].price : '$0';
+      const numeric = parseFloat(priceText.replace(/[^0-9.]/g, '')) || 0;
       total += numeric;
+
       const row = document.createElement('div');
       row.className = 'summary-item';
       row.innerHTML = `<div>${item}</div><div>${priceText}</div>`;
       summaryItemsEl.appendChild(row);
     });
+
     summaryTotalEl.innerText = `$${total.toFixed(2)}`;
   }
 
-  function proceedToCheckout(){
-    if(!cartList || cartList.length === 0){
+  function openInfoPage(page) {
+    const pageData = t().info[page];
+    if (!pageData) return;
+    siteModalTitle.textContent = pageData.title;
+    siteModalBody.innerHTML = pageData.body;
+    siteModal.classList.add('active');
+    siteModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeInfoPage() {
+    siteModal.classList.remove('active');
+    siteModal.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }
+
+  function openCategory(category) {
+    if (currentCategory === category && document.getElementById('productGrid').style.display === 'grid') {
+      return;
+    }
+
+    currentCategory = category;
+
+    const container = document.querySelector('.container');
+    const hero = document.querySelector('.hero');
+    const heroText = document.getElementById('heroText');
+    const bestsellerSection = document.getElementById('bestsellerSection');
+    const featuredBundles = document.getElementById('featuredBundles');
+    const bsTitle = document.querySelector('.bestseller-title');
+    const featuredTitle = document.querySelector('.featured-title');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const productGrid = document.getElementById('productGrid');
+    const productsEls = document.querySelectorAll('.product');
+
+    if (container) container.classList.add('page-fade-out');
+
+    setTimeout(() => {
+      hero.classList.add('hidden');
+      heroText.classList.add('hidden');
+      bestsellerSection.style.display = 'none';
+      if (bsTitle) bsTitle.style.display = 'none';
+      featuredBundles.style.display = 'none';
+      if (featuredTitle) featuredTitle.style.display = 'none';
+
+      categoryTitle.textContent = categoryLabel(category);
+      categoryTitle.classList.add('show');
+
+      productGrid.style.display = 'grid';
+      productGrid.classList.add('grid-enter');
+
+      productsEls.forEach((p, index) => {
+        const match = p.dataset.category === category;
+        p.style.display = match ? 'block' : 'none';
+
+        if (match) {
+          p.classList.add('reveal');
+          p.classList.remove('visible');
+          p.style.transitionDelay = `${index * 25}ms`;
+          requestAnimationFrame(() => p.classList.add('visible'));
+        }
+
+        const catEl = p.querySelector('.category');
+        if (catEl) catEl.innerText = categoryLabel(p.dataset.category);
+      });
+
+      requestAnimationFrame(() => {
+        productGrid.classList.remove('grid-enter');
+        productGrid.classList.add('grid-enter-active');
+      });
+
+      if (container) {
+        container.classList.remove('page-fade-out');
+        container.classList.add('page-fade-in');
+        setTimeout(() => container.classList.remove('page-fade-in'), 300);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 180);
+  }
+
+  function showMain() {
+    currentCategory = 'main';
+
+    const container = document.querySelector('.container');
+    const hero = document.querySelector('.hero');
+    const heroText = document.getElementById('heroText');
+    const bestsellerSection = document.getElementById('bestsellerSection');
+    const featuredBundles = document.getElementById('featuredBundles');
+    const bsTitle = document.querySelector('.bestseller-title');
+    const featuredTitle = document.querySelector('.featured-title');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const productGrid = document.getElementById('productGrid');
+    const productsEls = document.querySelectorAll('.product');
+
+    if (container) container.classList.add('page-fade-out');
+
+    setTimeout(() => {
+      hero.classList.remove('hidden');
+      heroText.classList.remove('hidden');
+      bestsellerSection.style.display = 'grid';
+      if (bsTitle) bsTitle.style.display = 'block';
+      featuredBundles.style.display = 'grid';
+      if (featuredTitle) featuredTitle.style.display = 'block';
+
+      productGrid.style.display = 'none';
+      categoryTitle.classList.remove('show');
+
+      productsEls.forEach(p => {
+        p.style.display = 'block';
+        p.classList.remove('visible');
+      });
+
+      if (container) {
+        container.classList.remove('page-fade-out');
+        container.classList.add('page-fade-in');
+        setTimeout(() => container.classList.remove('page-fade-in'), 300);
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 180);
+  }
+
+  function proceedToCheckout() {
+    if (!cartList || cartList.length === 0) {
       alert('Your cart is empty.');
       return;
     }
@@ -540,26 +900,27 @@ window.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow = 'hidden';
     checkoutModal.classList.add('active');
   }
-  window.proceedToCheckout = proceedToCheckout;
 
-  function closeCheckout(){
+  function closeCheckout() {
     checkoutModal.classList.remove('active');
     document.body.style.overflow = '';
   }
-  window.closeCheckout = closeCheckout;
 
-  function submitCheckout(){
+  function submitCheckout() {
     const btn = document.getElementById('checkoutSubmitBtn');
     btn.disabled = true;
     btn.innerText = 'Processing...';
+
     const formData = new FormData(checkoutForm);
     const name = formData.get('fullName');
-    if(!name){
+
+    if (!name) {
       alert('Please fill name.');
       btn.disabled = false;
-      btn.innerText = translations[currentLang].buttons.payNow || 'Pay now';
+      btn.innerText = t().buttons.payNow;
       return;
     }
+
     setTimeout(() => {
       checkoutModal.querySelector('.modal-content').innerHTML = `
         <div style="grid-column:1 / -1; text-align:center; padding:40px;">
@@ -572,122 +933,254 @@ window.addEventListener('DOMContentLoaded', () => {
       updateCart();
     }, 1100);
   }
-  window.submitCheckout = submitCheckout;
 
-  function finishCheckout(){
+  function finishCheckout() {
     closeCheckout();
     location.reload();
   }
-  window.finishCheckout = finishCheckout;
 
-  function escapeHtml(str){
-    if(!str) return '';
-    return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); });
+  function escapeHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>"']/g, m => ({
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+    }[m]));
   }
 
-  document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape'){
-      if(checkoutModal && checkoutModal.classList.contains('active')) closeCheckout();
-      else if(document.getElementById('cart').classList.contains('active')) toggleCart();
-    }
-  });
+  function updateUITexts() {
+    const theme = t();
 
-  function toggleLangPanel(e){
-    e && e.stopPropagation();
-    if(!langPanel) return;
-    const active = langPanel.classList.toggle('active');
-    langBtn.setAttribute('aria-expanded', active ? 'true' : 'false');
-    langPanel.setAttribute('aria-hidden', active ? 'false' : 'true');
-  }
-  langBtn && langBtn.addEventListener('click', toggleLangPanel);
-
-  document.querySelectorAll('.lang-option').forEach(opt=>{
-    opt.addEventListener('click', () => {
-      const lang = opt.dataset.lang;
-      setLanguage(lang);
+    document.querySelectorAll('nav ul li').forEach((li, idx) => {
+      if (theme.nav[idx]) li.innerText = theme.nav[idx];
     });
-  });
-
-  document.addEventListener('click', (e)=>{
-    if(!document.querySelector('.lang-wrap')) return;
-    if(!document.querySelector('.lang-wrap').contains(e.target)){
-      langPanel.classList.remove('active');
-      langBtn.setAttribute('aria-expanded','false');
-      langPanel.setAttribute('aria-hidden','true');
-    }
-  });
-
-  function updateUITexts(){
-    const t = translations[currentLang];
-    const navLis = document.querySelectorAll('nav ul li');
-    navLis.forEach((li, idx) => { if(t.nav[idx]) li.innerText = t.nav[idx]; });
 
     const heroText = document.getElementById('heroText');
-    if(heroText){
+    if (heroText) {
       const h1 = heroText.querySelector('h1');
       const p = heroText.querySelector('p');
-      if(h1) h1.innerText = t.hero.title;
-      if(p) p.innerText = t.hero.desc;
+      if (h1) h1.innerText = theme.hero.title;
+      if (p) p.innerText = theme.hero.desc;
     }
 
-    const featTitle = document.querySelector('.featured-title');
-    if(featTitle) featTitle.innerText = t.sectionFeatured;
+    const bestsellerTitle = document.querySelector('.bestseller-title');
+    if (bestsellerTitle) bestsellerTitle.innerText = theme.bestsellerTitle;
+
+    const featuredTitle = document.querySelector('.featured-title');
+    if (featuredTitle) featuredTitle.innerText = theme.sectionFeatured;
 
     const aboutTitle = document.querySelector('.about-title');
-    if(aboutTitle) aboutTitle.innerText = t.sectionAbout;
+    if (aboutTitle) aboutTitle.innerText = theme.sectionAbout;
+
+    const aboutP = document.querySelector('.about p');
+    if (aboutP) aboutP.innerText = theme.aboutText;
+
+    const footerLinks = document.querySelectorAll('.footer-link');
+    if (footerLinks[0]) footerLinks[0].innerText = theme.footer.support;
+    if (footerLinks[1]) footerLinks[1].innerText = theme.footer.contact;
+    if (footerLinks[2]) footerLinks[2].innerText = theme.footer.software;
+
+    const footer = document.querySelector('footer');
+    if (footer) footer.innerText = theme.footer.copyright;
 
     const cartH2 = document.querySelector('#cart h2');
-    if(cartH2) cartH2.innerText = t.cartTitle;
+    if (cartH2) cartH2.innerText = theme.cartTitle;
 
     const cartEl = document.getElementById('cart');
     const checkoutBtn = document.querySelector('.checkout');
-    if(checkoutBtn){
-      checkoutBtn.innerText = (cartEl && cartEl.classList.contains('active')) ? t.buttons.proceed : t.buttons.purchase;
+    if (checkoutBtn) {
+      checkoutBtn.innerText = (cartEl && cartEl.classList.contains('active')) ? theme.buttons.proceed : theme.buttons.purchase;
     }
 
-    document.querySelectorAll('.add-cart').forEach(btn=>{
-      btn.innerText = t.buttons.add;
+    document.querySelectorAll('.add-cart').forEach(btn => {
+      btn.innerText = theme.buttons.add;
     });
+
+    const productAddBtn = document.querySelector('#productView .add-cart');
+    if (productAddBtn) productAddBtn.innerText = theme.buttons.addToCart;
 
     const orderSummary = document.querySelector('#orderSummary h3');
-    if(orderSummary) orderSummary.innerText = t.orderSummary;
+    if (orderSummary) orderSummary.innerText = theme.orderSummary;
+
     const totalParent = document.querySelector('.order-summary .total');
-    if(totalParent) totalParent.childNodes[0] && (totalParent.childNodes[0].textContent = t.totalLabel + ' ');
+    if (totalParent && totalParent.childNodes[0]) {
+      totalParent.childNodes[0].textContent = theme.totalLabel + ' ';
+    }
 
     const map = {
-      fullName: t.form.fullName, email: t.form.email, address: t.form.address,
-      city: t.form.city, postal: t.form.postal, country: t.form.country
+      fullName: theme.form.fullName,
+      email: theme.form.email,
+      address: theme.form.address,
+      city: theme.form.city,
+      postal: theme.form.postal,
+      country: theme.form.country
     };
+
     Object.keys(map).forEach(id => {
       const label = document.querySelector(`label[for="${id}"]`);
-      if(label) label.innerText = map[id];
+      if (label) label.innerText = map[id];
     });
-  }
 
-  function setLanguage(lang){
-    if(!translations[lang]) return;
-    currentLang = lang;
-    localStorage.setItem('vixeraLang', lang);
-    document.getElementById('langBtn').innerText = lang.toUpperCase();
-    updateUITexts();
-    if(langPanel){
-      langPanel.classList.remove('active');
-      langBtn.setAttribute('aria-expanded','false');
-      langPanel.setAttribute('aria-hidden','true');
+    document.querySelectorAll('.product').forEach(card => {
+      const catEl = card.querySelector('.category');
+      if (catEl) catEl.innerText = categoryLabel(card.dataset.category);
+    });
+
+    if (currentCategory !== 'main') {
+      const categoryTitle = document.getElementById('categoryTitle');
+      if (categoryTitle) categoryTitle.textContent = categoryLabel(currentCategory);
     }
   }
 
-  function initLanguage(){
+  function setLanguage(lang) {
+    if (!translations[lang]) return;
+    currentLang = lang;
+    localStorage.setItem('vixeraLang', lang);
+    if (langBtn) langBtn.innerText = lang.toUpperCase();
+    updateUITexts();
+
+    if (langPanel) {
+      langPanel.classList.remove('active');
+      langBtn.setAttribute('aria-expanded', 'false');
+      langPanel.setAttribute('aria-hidden', 'true');
+    }
+  }
+
+  function initLanguage() {
     const saved = localStorage.getItem('vixeraLang') || currentLang;
     setLanguage(saved);
   }
 
+  function toggleCart() {
+    const cartEl = document.getElementById('cart');
+    cartEl.classList.toggle('active');
+
+    const btn = document.querySelector('.checkout');
+    if (!btn) return;
+
+    if (cartEl.classList.contains('active')) {
+      btn.innerText = t().buttons.proceed;
+    } else {
+      btn.innerText = t().buttons.purchase;
+    }
+  }
+
+  function addToCart(item) {
+    cartList.push(item);
+    updateCart();
+  }
+
+  function openProduct(id) {
+    if (!products[id]) return;
+
+    window.currentProduct = products[id].title;
+    document.getElementById('productTitle').innerText = products[id].title;
+    document.getElementById('productPrice').innerText = products[id].price;
+    document.getElementById('productDesc').innerText = products[id].desc;
+    document.getElementById('productSpecs').innerText = products[id].specs;
+
+    const imageBox = document.querySelector('.product-image-large');
+    const data = products[id];
+
+    if (data.images) {
+      imageBox.style.backgroundImage = `url('${data.images[0]}')`;
+      const thumbs = data.images.map((img) =>
+        `<img src="${img}" class="thumb" onclick="changeImage('${img}')">`
+      ).join('');
+      document.getElementById('productSpecs').innerHTML += `<div class="thumbs">${thumbs}</div>`;
+    } else {
+      imageBox.style.backgroundImage = `url('${data.image}')`;
+    }
+
+    const addBtn = document.querySelector('#productView .add-cart');
+    if (addBtn) addBtn.innerText = t().buttons.addToCart;
+
+    productView.classList.add('active');
+  }
+
+  function closeProduct() {
+    productView.classList.remove('active');
+  }
+
+  window.removeItem = function(index) {
+    cartList.splice(index, 1);
+    updateCart();
+  };
+
+  window.toggleCart = toggleCart;
+  window.addToCart = addToCart;
+  window.openProduct = openProduct;
+  window.closeProduct = closeProduct;
+  window.openCategory = openCategory;
+  window.showMain = showMain;
+  window.openInfoPage = openInfoPage;
+  window.closeInfoPage = closeInfoPage;
+  window.proceedToCheckout = proceedToCheckout;
+  window.closeCheckout = closeCheckout;
+  window.submitCheckout = submitCheckout;
+  window.finishCheckout = finishCheckout;
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (checkoutModal && checkoutModal.classList.contains('active')) closeCheckout();
+      else if (document.getElementById('cart').classList.contains('active')) toggleCart();
+      else if (siteModal && siteModal.classList.contains('active')) closeInfoPage();
+      else if (productView && productView.classList.contains('active')) closeProduct();
+    }
+  });
+
+  function toggleLangPanel(e) {
+    e && e.stopPropagation();
+    if (!langPanel) return;
+    const active = langPanel.classList.toggle('active');
+    langBtn.setAttribute('aria-expanded', active ? 'true' : 'false');
+    langPanel.setAttribute('aria-hidden', active ? 'false' : 'true');
+  }
+
+  langBtn && langBtn.addEventListener('click', toggleLangPanel);
+
+  document.querySelectorAll('.lang-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      setLanguage(opt.dataset.lang);
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    const wrap = document.querySelector('.lang-wrap');
+    if (!wrap) return;
+
+    if (!wrap.contains(e.target)) {
+      langPanel.classList.remove('active');
+      langBtn.setAttribute('aria-expanded', 'false');
+      langPanel.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  productView.addEventListener('click', function(e) {
+    if (!productLayout.contains(e.target)) {
+      productView.classList.remove('active');
+    }
+  });
+
   updateCart();
   initLanguage();
+  updateUITexts();
 });
 
-window.changeImage = function(src){
-  document.querySelector(".product-image-large").style.backgroundImage = `url('${src}')`;
+document.querySelectorAll(".add-cart").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.classList.add("clicked");
+
+    setTimeout(() => {
+      btn.classList.remove("clicked");
+    }, 400);
+  });
+});
+
+window.changeImage = function(src) {
+  document.querySelector('.product-image-large').style.backgroundImage = `url('${src}')`;
 };
 </script>
 
